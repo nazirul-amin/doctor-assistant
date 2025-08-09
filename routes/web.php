@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\QueueController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -13,10 +14,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('consultations', [ConsultationController::class, 'index'])
-        ->name('consultations.index');
-    Route::post('consultations', [ConsultationController::class, 'store'])
-        ->name('consultations.store');
+    // Queue routes
+    Route::get('queue', [QueueController::class, 'index'])->name('queue.index');
+    Route::get('queue/create', [QueueController::class, 'create'])->name('queue.create');
+    Route::post('queue', [QueueController::class, 'store'])->name('queue.store');
+    Route::post('queue/{queue}/process', [QueueController::class, 'process'])->name('queue.process');
+    Route::post('queue/{queue}/complete', [QueueController::class, 'complete'])->name('queue.complete');
+    Route::post('queue/{queue}/cancel', [QueueController::class, 'cancel'])->name('queue.cancel');
+    Route::delete('queue/{queue}', [QueueController::class, 'destroy'])->name('queue.destroy');
+
+    Route::get('consultations', [ConsultationController::class, 'index'])->name('consultations.index');
+    Route::get('consultations/{consultation}', [ConsultationController::class, 'show'])->name('consultations.show');
+
+    // JSON API endpoints for audio upload/transcription
+    Route::post('api/voice/upload', [ConsultationController::class, 'uploadAudio'])->name('voice.upload');
+    Route::post('api/voice/transcribe', [ConsultationController::class, 'transcribe'])->name('voice.transcribe');
 });
 
 require __DIR__.'/settings.php';

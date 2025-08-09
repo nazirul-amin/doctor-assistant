@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Consultation;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +17,23 @@ class ConsultationController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('consultations/index');
+        $consultations = Consultation::with('patient')
+            ->where('doctor_id', auth()->id())
+            ->latest()
+            ->get();
+
+        return Inertia::render('consultations/index', [
+            'consultations' => $consultations,
+        ]);
+    }
+
+    public function show(Consultation $consultation): Response
+    {
+        $consultation->load('patient');
+
+        return Inertia::render('consultations/show', [
+            'consultation' => $consultation,
+        ]);
     }
 
     /**
@@ -35,9 +53,10 @@ class ConsultationController extends Controller
             // Get full path
             $fullPath = Storage::disk('local')->path($path);
 
-            return back()->with([
-                'success' => 'Audio file uploaded successfully',
-                'audio_data' => [
+            return response()->json([
+                'success' => true,
+                'message' => 'Audio file uploaded successfully',
+                'data' => [
                     'filename' => $filename,
                     'path' => $path,
                     'full_path' => $fullPath,
@@ -46,7 +65,10 @@ class ConsultationController extends Controller
             ]);
 
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to upload audio file: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload audio file: '.$e->getMessage(),
+            ], 422);
         }
     }
 
@@ -57,6 +79,7 @@ class ConsultationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'file_path' => 'required|string',
+            'consultation_id' => 'sometimes|exists:consultations,id',
             'model' => 'sometimes|string|in:whisper-large-v3,whisper-large-v3-turbo',
             'language' => 'sometimes|string|max:10',
             'prompt' => 'sometimes|string|max:244',
@@ -65,7 +88,11 @@ class ConsultationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->with('error', 'Validation failed');
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
         }
 
         try {
@@ -73,9 +100,10 @@ class ConsultationController extends Controller
 
             // Check if file exists
             if (! Storage::disk('local')->exists($filePath)) {
-                $errorMessage = 'Audio file not found';
-
-                return back()->with('error', $errorMessage);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Audio file not found',
+                ], 404);
             }
 
             // Get full system path
@@ -110,82 +138,39 @@ class ConsultationController extends Controller
             // Clean up the file after transcription
             Storage::disk('local')->delete($filePath);
 
-            $resultData = [
-                'transcription' => $transcription,
-                'model_used' => $transcriptionParams['model'],
-                'response_format' => $transcriptionParams['response_format'],
-                'full_response' => $response,
-            ];
+            $consultationId = $request->input('consultation_id');
+            if ($consultationId) {
+                $consultation = Consultation::where('id', $consultationId)
+                    ->where('doctor_id', auth()->id())
+                    ->firstOrFail();
+                $consultation->update([
+                    'transcript' => is_string($transcription) ? $transcription : json_encode($transcription),
+                    'model_used' => $transcriptionParams['model'],
+                    'status' => 'completed',
+                ]);
+            }
 
-            return back()
-                ->with('success', 'Audio transcribed successfully')
-                ->with('transcription_data', $resultData);
+            return response()->json([
+                'success' => true,
+                'message' => 'Audio transcribed successfully',
+                'data' => [
+                    'transcription' => $transcription,
+                    'model_used' => $transcriptionParams['model'],
+                    'response_format' => $transcriptionParams['response_format'],
+                    'full_response' => $response,
+                ],
+            ]);
 
         } catch (Throwable $e) {
-            $errorMessage = 'Failed to transcribe audio: '.$e->getMessage();
-
-            return back()->with('error', $errorMessage);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to transcribe audio: '.$e->getMessage(),
+            ], 500);
         }
     }
 
     /**
      * Store transcription via Inertia form
      */
-    public function store(Request $request): Response
-    {
-        $request->validate([
-            'audio' => 'required|file|mimes:mp3,mpeg,wav,flac,mp4,m4a,ogg,webm|max:25600',
-            'model' => 'sometimes|string|in:whisper-large-v3,whisper-large-v3-turbo',
-            'language' => 'sometimes|string|max:10',
-            'prompt' => 'sometimes|string|max:244',
-            'response_format' => 'sometimes|string|in:json,text,srt,verbose_json,vtt',
-            'temperature' => 'sometimes|numeric|between:0,1',
-        ]);
 
-        try {
-            // Upload the file first
-            $audioFile = $request->file('audio');
-            $filename = 'audio_'.time().'_'.uniqid().'.mp3';
-            $path = $audioFile->storeAs('audio', $filename, 'local');
-            $fullPath = Storage::disk('local')->path($path);
-
-            // Prepare Groq API parameters
-            $transcriptionParams = [
-                'file' => $fullPath,
-                'model' => $request->input('model', 'whisper-large-v3-turbo'),
-                'response_format' => $request->input('response_format', 'json'),
-            ];
-
-            // Add optional parameters
-            if ($request->filled('language')) {
-                $transcriptionParams['language'] = $request->input('language');
-            }
-
-            if ($request->filled('prompt')) {
-                $transcriptionParams['prompt'] = $request->input('prompt');
-            }
-
-            if ($request->filled('temperature')) {
-                $transcriptionParams['temperature'] = (float) $request->input('temperature');
-            }
-
-            // Transcribe
-            $response = Groq::transcriptions()->create($transcriptionParams);
-            $transcription = isset($response['text']) ? $response['text'] : $response;
-
-            // Clean up
-            Storage::disk('local')->delete($path);
-
-            return Inertia::render('consultations/index', [
-                'success' => 'Audio transcribed successfully',
-                'transcription' => $transcription,
-                'model_used' => $transcriptionParams['model'],
-            ]);
-
-        } catch (Throwable $e) {
-            return Inertia::render('consultations/index', [
-                'error' => 'Failed to transcribe audio: '.$e->getMessage(),
-            ]);
-        }
-    }
 }
