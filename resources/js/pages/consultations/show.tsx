@@ -5,6 +5,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import MarkdownIt from 'markdown-it';
 
 interface ConsultationPageProps {
     consultation: {
@@ -179,11 +180,12 @@ export default function ConsultationShow() {
                                         <span>Generating summary...</span>
                                     </div>
                                 ) : summary ? (
-                                    <div className="whitespace-pre-wrap bg-blue-50 p-4 rounded">
-                                        {summary.split('\n').map((line, i) => (
-                                            <p key={i} className="mb-2">{line}</p>
-                                        ))}
-                                    </div>
+                                    <div className="prose max-w-none" dangerouslySetInnerHTML={{
+                                        __html: (() => {
+                                            const md = new MarkdownIt();
+                                            return md.render(props.consultation.summary || '');
+                                        })()
+                                    }} />
                                 ) : (
                                     <p className="text-gray-500 italic">
                                         {transcript 
