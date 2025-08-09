@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('doctor_id')->constrained('users')->cascadeOnDelete();
             $table->string('status')->default('draft'); // draft|active|completed
             $table->text('transcript')->nullable();
+            $table->text('summary')->nullable();
             $table->string('audio_path')->nullable();
             $table->string('model_used')->nullable();
             $table->timestamps();

@@ -15,6 +15,7 @@ class Consultation extends Model
         'doctor_id',
         'status',
         'transcript',
+        'summary',
         'audio_path',
         'model_used',
     ];

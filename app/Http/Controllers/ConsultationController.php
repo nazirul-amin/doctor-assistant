@@ -74,6 +74,60 @@ class ConsultationController extends Controller
     /**
      * Transcribe audio file using Groq's speech-to-text API
      */
+    /**
+     * Summarize consultation using Groq LLM
+     */
+    public function summarize(Consultation $consultation)
+    {
+        try {
+            if (empty($consultation->transcript)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No transcript available for summarization',
+                ], 400);
+            }
+
+            $systemPrompt = "You are a medical assistant. Please analyze the following doctor-patient consultation transcript and provide:\n";
+            $systemPrompt .= "1. A brief summary of the consultation\n";
+            $systemPrompt .= "2. Key symptoms and patient complaints\n";
+            $systemPrompt .= "3. Potential diagnoses (list as possibilities, not certainties)\n";
+            $systemPrompt .= "4. Recommended tests or follow-up actions\n";
+            $systemPrompt .= "5. Any immediate concerns that require attention";
+
+            $response = Groq::chat()->completions()->create([
+                'model' => 'meta-llama/llama-4-maverick-17b-128e-instruct',
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => "Here is the consultation transcript to analyze:\n\n" . $consultation->transcript]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 2000,
+            ]);
+
+            $summary = $response['choices'][0]['message']['content'];
+
+            // Update consultation with summary
+            $consultation->update([
+                'summary' => $summary,
+                'status' => 'summarized'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'summary' => $summary
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate summary: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Transcribe audio using Groq
+     */
     public function transcribe(Request $request)
     {
         $validator = Validator::make($request->all(), [
