@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConsultationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,9 +13,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('consultations', [App\Http\Controllers\VoiceController::class, 'index'])
+    Route::get('consultations', [ConsultationController::class, 'index'])
         ->name('consultations.index');
-    Route::post('consultations', [App\Http\Controllers\VoiceController::class, 'store'])
+    Route::post('consultations', [ConsultationController::class, 'store'])
         ->name('consultations.store');
 });
 

@@ -44,7 +44,7 @@ export default function VoiceDemo() {
             <Head title="Voice Recognition Demo" />
 
             <div className="container mx-auto px-4 py-8">
-                <h1 className="mb-8 text-3xl font-bold">Voice Recognition Demo</h1>
+                <h1 className="mb-8 text-3xl font-bold">Doctor Consultation</h1>
 
                 <div className="grid max-w-4xl gap-6">
                     <div className="grid gap-6 md:grid-cols-2">

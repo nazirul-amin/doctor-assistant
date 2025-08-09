@@ -10,8 +10,9 @@ use Illuminate\Validation\Rules\File;
 use Inertia\Inertia;
 use Inertia\Response;
 use LucianoTonet\GroqLaravel\Facades\Groq;
+use Throwable;
 
-class VoiceController extends Controller
+class ConsultationController extends Controller
 {
     /**
      * Show the voice demo page
@@ -24,7 +25,7 @@ class VoiceController extends Controller
     /**
      * Upload and store audio file
      */
-    public function uploadAudio(Request $request): JsonResponse
+    public function uploadAudio(Request $request)
     {
         try {
             $audioFile = $request->file('audio');
@@ -38,34 +39,26 @@ class VoiceController extends Controller
             // Get full path
             $fullPath = Storage::disk('local')->path($path);
 
-            return response()->json([
-                'success' => true,
-                'data' => [
+            return back()->with([
+                'success' => 'Audio file uploaded successfully',
+                'audio_data' => [
                     'filename' => $filename,
                     'path' => $path,
                     'full_path' => $fullPath,
                     'size' => $audioFile->getSize(),
-                ],
-                'message' => 'Audio file uploaded successfully',
+                ]
             ]);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to upload audio file',
-                'error' => $e->getMessage(),
-            ], 500);
+        } catch (Throwable $e) {
+            return back()->with('error', 'Failed to upload audio file: ' . $e->getMessage());
         }
     }
 
     /**
      * Transcribe audio file using Groq's speech-to-text API
      */
-    public function transcribe(Request $request): JsonResponse
+    public function transcribe(Request $request)
     {
-        // For API endpoints, we'll keep JSON responses
-        // But we can also add Inertia support for form submissions
-
         $validator = Validator::make($request->all(), [
             'file_path' => 'required|string',
             'model' => 'sometimes|string|in:whisper-large-v3,whisper-large-v3-turbo',
@@ -76,16 +69,7 @@ class VoiceController extends Controller
         ]);
 
         if ($validator->fails()) {
-            // If it's an Inertia request, redirect back with errors
-            if ($request->header('X-Inertia')) {
-                return back()->withErrors($validator)->with('error', 'Validation failed');
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+            return back()->withErrors($validator)->with('error', 'Validation failed');
         }
 
         try {
@@ -94,15 +78,7 @@ class VoiceController extends Controller
             // Check if file exists
             if (! Storage::disk('local')->exists($filePath)) {
                 $errorMessage = 'Audio file not found';
-
-                if ($request->header('X-Inertia')) {
-                    return back()->with('error', $errorMessage);
-                }
-
-                return response()->json([
-                    'success' => false,
-                    'message' => $errorMessage,
-                ], 404);
+                return back()->with('error', $errorMessage);
             }
 
             // Get full system path
@@ -144,29 +120,13 @@ class VoiceController extends Controller
                 'full_response' => $response,
             ];
 
-            // If it's an Inertia request, redirect back with success data
-            if ($request->header('X-Inertia')) {
-                return back()->with('success', 'Audio transcribed successfully')->with('transcription_data', $resultData);
-            }
+            return back()
+                ->with('success', 'Audio transcribed successfully')
+                ->with('transcription_data', $resultData);
 
-            return response()->json([
-                'success' => true,
-                'data' => $resultData,
-                'message' => 'Audio transcribed successfully',
-            ]);
-
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $errorMessage = 'Failed to transcribe audio: '.$e->getMessage();
-
-            if ($request->header('X-Inertia')) {
-                return back()->with('error', $errorMessage);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => $errorMessage,
-                'error' => $e->getMessage(),
-            ], 500);
+            return back()->with('error', $errorMessage);
         }
     }
 
@@ -224,7 +184,7 @@ class VoiceController extends Controller
                 'model_used' => $transcriptionParams['model'],
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return Inertia::render('consultations/index', [
                 'error' => 'Failed to transcribe audio: '.$e->getMessage(),
             ]);
