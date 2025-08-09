@@ -1,17 +1,24 @@
-import VoiceRecorder from '@/components/VoiceRecorder';
-import { Head, usePage } from '@inertiajs/react';
-import React, { useState } from 'react';
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link, usePage } from '@inertiajs/react';
+import React, { useMemo, useState } from 'react';
 
-interface VoiceDemoProps {
+interface PageProps {
     success?: string;
     error?: string;
     transcription?: string;
     model_used?: string;
     transcription_data?: any;
+    consultations?: Array<{
+        id: number;
+        status: string;
+        model_used?: string | null;
+        created_at: string;
+        patient: { id: number; name: string };
+    }>;
 }
 
-export default function VoiceDemo() {
-    const { props } = usePage<VoiceDemoProps>();
+export default function ConsultationsIndex() {
+    const { props } = usePage<PageProps>();
     const [transcription, setTranscription] = useState<string>(props.transcription || '');
     const [error, setError] = useState<string>(props.error || '');
 
@@ -39,49 +46,37 @@ export default function VoiceDemo() {
         }
     }, [props.success, props.error, props.transcription_data]);
 
+    const breadcrumbs = useMemo(() => [{ title: 'Consultations', href: '/consultations' }], []);
+
     return (
-        <>
-            <Head title="Voice Recognition Demo" />
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Consultations" />
 
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="mb-8 text-3xl font-bold">Doctor Consultation</h1>
+            <div className="flex flex-col gap-6 p-4">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-semibold">Consultations</h1>
+                </div>
 
-                <div className="grid max-w-4xl gap-6">
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <VoiceRecorder onTranscription={handleTranscription} onError={handleError} />
-                    </div>
-
-                    {/* Transcription Result */}
-                    {transcription && (
-                        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-                            <h3 className="mb-2 text-lg font-semibold text-green-800">Transcription Result:</h3>
-                            <p className="text-green-700">{transcription}</p>
+                <div className="grid gap-4">
+                    {props.consultations && props.consultations.length > 0 ? (
+                        <div className="divide-y rounded-lg border">
+                            {props.consultations.map((c) => (
+                                <Link key={c.id} href={route('consultations.show', c.id)} className="block p-4 hover:bg-muted/50">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <div className="font-medium">{c.patient.name}</div>
+                                            <div className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</div>
+                                        </div>
+                                        <div className="text-sm capitalize">{c.status}</div>
+                                    </div>
+                                </Link>
+                            ))}
                         </div>
+                    ) : (
+                        <div className="rounded-lg border p-6 text-center text-muted-foreground">No consultations yet.</div>
                     )}
-
-                    {/* Error Display */}
-                    {error && (
-                        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                            <h3 className="mb-2 text-lg font-semibold text-red-800">Error:</h3>
-                            <p className="text-red-700">{error}</p>
-                        </div>
-                    )}
-
-                    {/* API Information */}
-                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                        <h3 className="mb-2 text-lg font-semibold text-blue-800">API Information:</h3>
-                        <ul className="space-y-1 text-sm text-blue-700">
-                            <li>• Auto-converts to MP3 format using LameJS</li>
-                            <li>
-                                • Endpoint: <code>/api/voice/transcribe</code>
-                            </li>
-                            <li>• Supported input: MP3, WAV, FLAC, MP4, M4A, OGG, WEBM</li>
-                            <li>• Maximum file size: 25MB</li>
-                            <li>• Model: Whisper Large V3 Turbo (Groq)</li>
-                        </ul>
-                    </div>
                 </div>
             </div>
-        </>
+        </AppLayout>
     );
 }

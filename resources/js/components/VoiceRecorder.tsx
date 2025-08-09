@@ -19,11 +19,18 @@ const loadLameJS = async () => {
 };
 
 interface VoiceRecorderProps {
+    consultationId?: number;
     onTranscription?: (text: string) => void;
     onError?: (error: string) => void;
+    autoTranscribe?: boolean;
 }
 
-export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorderProps) {
+export default function VoiceRecorder({ 
+    consultationId, 
+    onTranscription, 
+    onError, 
+    autoTranscribe = true 
+}: VoiceRecorderProps) {
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -51,6 +58,11 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
                     // Convert to MP3 format
                     const mp3File = await convertToMp3(blob);
                     setAudioFile(mp3File);
+                    
+                    // Auto-transcribe if enabled
+                    if (autoTranscribe) {
+                        await transcribeAudio(mp3File);
+                    }
                 } catch (error) {
                     console.error('Audio conversion failed:', error);
                     // Fallback: use original blob with MP3 extension
@@ -59,6 +71,11 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
                         lastModified: Date.now(),
                     });
                     setAudioFile(fallbackFile);
+                    
+                    // Auto-transcribe the fallback file if enabled
+                    if (autoTranscribe) {
+                        await transcribeAudio(fallbackFile);
+                    }
                 }
 
                 // Stop all tracks to release microphone
@@ -158,10 +175,17 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
         }
     };
 
-    const transcribeAudio = async (file: File) => {
+    const transcribeAudio = async (file: File): Promise<boolean> => {
         setIsProcessing(true);
 
         try {
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                onError?.('CSRF token not found');
+                return false;
+            }
+
             // Step 1: Upload the MP3 file first
             const uploadFormData = new FormData();
             uploadFormData.append('audio', file);
@@ -172,14 +196,19 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
                 headers: {
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken,
                 },
             });
+
+            if (!uploadResponse.ok) {
+                throw new Error(`Upload failed with status: ${uploadResponse.status}`);
+            }
 
             const uploadResult = await uploadResponse.json();
 
             if (!uploadResult.success) {
                 onError?.(uploadResult.message || 'File upload failed');
-                return;
+                return false;
             }
 
             // Step 2: Send the file path for transcription
@@ -187,6 +216,9 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
             transcribeFormData.append('file_path', uploadResult.data.path);
             transcribeFormData.append('model', 'whisper-large-v3-turbo');
             transcribeFormData.append('response_format', 'json');
+            if (consultationId) {
+                transcribeFormData.append('consultation_id', String(consultationId));
+            }
 
             const transcribeResponse = await fetch('/api/voice/transcribe', {
                 method: 'POST',
@@ -194,18 +226,29 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
                 headers: {
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken,
                 },
             });
+
+            if (!transcribeResponse.ok) {
+                throw new Error(`Transcription failed with status: ${transcribeResponse.status}`);
+            }
 
             const transcribeResult = await transcribeResponse.json();
 
             if (transcribeResult.success) {
                 onTranscription?.(transcribeResult.data.transcription);
+                return true;
             } else {
-                onError?.(transcribeResult.message || 'Transcription failed');
+                const errorMsg = transcribeResult.message || 'Transcription failed';
+                onError?.(errorMsg);
+                return false;
             }
         } catch (error) {
-            onError?.('Network error: ' + (error as Error).message);
+            const errorMsg = 'Error during transcription: ' + (error as Error).message;
+            onError?.(errorMsg);
+            console.error('Transcription error:', error);
+            return false;
         } finally {
             setIsProcessing(false);
         }
