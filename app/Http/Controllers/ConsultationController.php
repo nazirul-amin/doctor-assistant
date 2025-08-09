@@ -221,8 +221,4 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Store transcription via Inertia form
-     */
 }

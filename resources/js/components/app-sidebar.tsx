@@ -9,12 +9,7 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Registration Queue',
+        title: 'Queues',
         href: '/queue',
         icon: Clock,
     },
