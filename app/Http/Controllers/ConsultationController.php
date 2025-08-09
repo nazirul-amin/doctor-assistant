@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -14,9 +13,6 @@ use Throwable;
 
 class ConsultationController extends Controller
 {
-    /**
-     * Show the voice demo page
-     */
     public function index(): Response
     {
         return Inertia::render('consultations/index');
@@ -46,11 +42,11 @@ class ConsultationController extends Controller
                     'path' => $path,
                     'full_path' => $fullPath,
                     'size' => $audioFile->getSize(),
-                ]
+                ],
             ]);
 
         } catch (Throwable $e) {
-            return back()->with('error', 'Failed to upload audio file: ' . $e->getMessage());
+            return back()->with('error', 'Failed to upload audio file: '.$e->getMessage());
         }
     }
 
@@ -78,6 +74,7 @@ class ConsultationController extends Controller
             // Check if file exists
             if (! Storage::disk('local')->exists($filePath)) {
                 $errorMessage = 'Audio file not found';
+
                 return back()->with('error', $errorMessage);
             }
 
@@ -126,6 +123,7 @@ class ConsultationController extends Controller
 
         } catch (Throwable $e) {
             $errorMessage = 'Failed to transcribe audio: '.$e->getMessage();
+
             return back()->with('error', $errorMessage);
         }
     }
