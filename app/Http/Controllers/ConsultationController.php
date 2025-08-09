@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Consultation;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\File;
@@ -16,6 +19,10 @@ class ConsultationController extends Controller
 {
     public function index(): Response
     {
+        if (!Gate::allows('viewAny', Consultation::class)) {
+            abort(403, 'You do not have permission to view consultations.');
+        }
+
         $consultations = Consultation::with('patient')
             ->where('doctor_id', auth()->id())
             ->latest()
@@ -28,6 +35,9 @@ class ConsultationController extends Controller
 
     public function show(Consultation $consultation): Response
     {
+        if (!Gate::allows('view', $consultation)) {
+            abort(403, 'You do not have permission to view this consultation.');
+        }
         $consultation->load('patient');
 
         return Inertia::render('consultations/show', [
@@ -194,7 +204,7 @@ class ConsultationController extends Controller
             $consultationId = $request->input('consultation_id');
             if ($consultationId) {
                 $consultation = Consultation::where('id', $consultationId)
-                    ->where('doctor_id', auth()->id())
+                    ->where('doctor_id', Auth::id())
                     ->firstOrFail();
                 $consultation->update([
                     'transcript' => is_string($transcription) ? $transcription : json_encode($transcription),

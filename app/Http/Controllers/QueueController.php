@@ -6,6 +6,8 @@ use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\Queue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -13,6 +15,10 @@ class QueueController extends Controller
 {
     public function index(): Response
     {
+        if (!Gate::allows('viewAny', Queue::class)) {
+            abort(403, 'You do not have permission to view the queue.');
+        }
+
         $todayQueue = Queue::today()
             ->with(['patient', 'consultation', 'processedBy'])
             ->orderBy('queue_number')
@@ -40,6 +46,10 @@ class QueueController extends Controller
 
     public function store(Request $request)
     {
+        if (!Gate::allows('create', Queue::class)) {
+            abort(403, 'You do not have permission to add to the queue.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'age' => 'required|integer|min:0|max:130',
@@ -48,7 +58,7 @@ class QueueController extends Controller
 
         $queueNumber = Queue::getNextQueueNumber();
 
-        $queueItem = Queue::create([
+        $queue = Queue::create([
             'name' => $validated['name'],
             'age' => $validated['age'],
             'gender' => $validated['gender'],
@@ -57,11 +67,15 @@ class QueueController extends Controller
         ]);
 
         return redirect()->route('queue.index')
-            ->with('success', "Patient {$validated['name']} added to queue. Queue number: {$queueNumber}");
+            ->with('success', 'Patient added to the queue successfully.');
     }
 
     public function process(Queue $queue)
     {
+        if (!Gate::allows('process', $queue)) {
+            abort(403, 'You do not have permission to process the queue.');
+        }
+
         if ($queue->status !== 'waiting') {
             return redirect()->route('queue.index')
                 ->with('error', 'This queue item cannot be processed.');
@@ -111,6 +125,10 @@ class QueueController extends Controller
 
     public function cancel(Queue $queue)
     {
+        if (!Gate::allows('cancel', $queue)) {
+            abort(403, 'You do not have permission to delete the queue.');
+        }
+
         if ($queue->status === 'completed') {
             return redirect()->route('queue.index')
                 ->with('error', 'Cannot cancel a completed queue item.');
@@ -126,14 +144,16 @@ class QueueController extends Controller
 
     public function destroy(Queue $queue)
     {
+        if (!Gate::allows('cancel', $queue)) {
+            abort(403, 'You do not have permission to delete the queue.');
+        }
+
         if ($queue->status === 'in_progress') {
-            return redirect()->route('queue.index')
-                ->with('error', 'Cannot delete a queue item that is in progress.');
+            return back()->with('error', 'Cannot delete a queue that is in progress.');
         }
 
         $queue->delete();
 
-        return redirect()->route('queue.index')
-            ->with('success', 'Queue item deleted.');
+        return back()->with('success', 'Queue has been deleted.');
     }
 }
