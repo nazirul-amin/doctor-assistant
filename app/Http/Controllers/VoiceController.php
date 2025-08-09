@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\File;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -28,16 +28,16 @@ class VoiceController extends Controller
     {
         try {
             $audioFile = $request->file('audio');
-            
+
             // Generate unique filename
-            $filename = 'audio_' . time() . '_' . uniqid() . '.mp3';
-            
+            $filename = 'audio_'.time().'_'.uniqid().'.mp3';
+
             // Store file in storage/app/audio directory
             $path = $audioFile->storeAs('audio', $filename, 'local');
-            
+
             // Get full path
             $fullPath = Storage::disk('local')->path($path);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -65,7 +65,7 @@ class VoiceController extends Controller
     {
         // For API endpoints, we'll keep JSON responses
         // But we can also add Inertia support for form submissions
-        
+
         $validator = Validator::make($request->all(), [
             'file_path' => 'required|string',
             'model' => 'sometimes|string|in:whisper-large-v3,whisper-large-v3-turbo',
@@ -80,7 +80,7 @@ class VoiceController extends Controller
             if ($request->header('X-Inertia')) {
                 return back()->withErrors($validator)->with('error', 'Validation failed');
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -90,15 +90,15 @@ class VoiceController extends Controller
 
         try {
             $filePath = $request->input('file_path');
-            
+
             // Check if file exists
-            if (!Storage::disk('local')->exists($filePath)) {
+            if (! Storage::disk('local')->exists($filePath)) {
                 $errorMessage = 'Audio file not found';
-                
+
                 if ($request->header('X-Inertia')) {
                     return back()->with('error', $errorMessage);
                 }
-                
+
                 return response()->json([
                     'success' => false,
                     'message' => $errorMessage,
@@ -119,18 +119,18 @@ class VoiceController extends Controller
             if ($request->has('language')) {
                 $transcriptionParams['language'] = $request->input('language');
             }
-            
+
             if ($request->has('prompt')) {
                 $transcriptionParams['prompt'] = $request->input('prompt');
             }
-            
+
             if ($request->has('temperature')) {
                 $transcriptionParams['temperature'] = (float) $request->input('temperature');
             }
 
             // Call Groq service to transcribe the audio
             $response = Groq::transcriptions()->create($transcriptionParams);
-            
+
             // Extract transcription text based on response format
             $transcription = isset($response['text']) ? $response['text'] : $response;
 
@@ -156,12 +156,12 @@ class VoiceController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            $errorMessage = 'Failed to transcribe audio: ' . $e->getMessage();
-            
+            $errorMessage = 'Failed to transcribe audio: '.$e->getMessage();
+
             if ($request->header('X-Inertia')) {
                 return back()->with('error', $errorMessage);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => $errorMessage,
@@ -187,7 +187,7 @@ class VoiceController extends Controller
         try {
             // Upload the file first
             $audioFile = $request->file('audio');
-            $filename = 'audio_' . time() . '_' . uniqid() . '.mp3';
+            $filename = 'audio_'.time().'_'.uniqid().'.mp3';
             $path = $audioFile->storeAs('audio', $filename, 'local');
             $fullPath = Storage::disk('local')->path($path);
 
@@ -202,11 +202,11 @@ class VoiceController extends Controller
             if ($request->filled('language')) {
                 $transcriptionParams['language'] = $request->input('language');
             }
-            
+
             if ($request->filled('prompt')) {
                 $transcriptionParams['prompt'] = $request->input('prompt');
             }
-            
+
             if ($request->filled('temperature')) {
                 $transcriptionParams['temperature'] = (float) $request->input('temperature');
             }
@@ -226,7 +226,7 @@ class VoiceController extends Controller
 
         } catch (\Exception $e) {
             return Inertia::render('consultations/index', [
-                'error' => 'Failed to transcribe audio: ' . $e->getMessage(),
+                'error' => 'Failed to transcribe audio: '.$e->getMessage(),
             ]);
         }
     }

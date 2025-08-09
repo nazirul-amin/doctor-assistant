@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+
 use function Laravel\Prompts\form;
 
 class CreateUser extends Command
@@ -37,7 +38,7 @@ class CreateUser extends Command
             )
             ->confirm('Do you accept the terms?')
             ->submit();
-        
+
         User::create([
             'name' => $responses['name'],
             'email' => $responses['email'],
