@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Consultation;
-use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -172,5 +171,4 @@ class ConsultationController extends Controller
     /**
      * Store transcription via Inertia form
      */
-
 }

@@ -21,5 +21,3 @@ class Patient extends Model
         return $this->hasMany(Consultation::class);
     }
 }
-
-

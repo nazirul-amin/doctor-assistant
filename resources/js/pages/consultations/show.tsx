@@ -1,9 +1,8 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import VoiceRecorder from '@/components/VoiceRecorder';
 import AppLayout from '@/layouts/app-layout';
 import { Head, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
-import VoiceRecorder from '@/components/VoiceRecorder';
 
 interface ConsultationPageProps {
     consultation: {
@@ -20,10 +19,13 @@ export default function ConsultationShow() {
     const [transcript, setTranscript] = useState(props.consultation.transcript || '');
     const [error, setError] = useState('');
 
-    const breadcrumbs = useMemo(() => [
-        { title: 'Consultations', href: '/consultations' },
-        { title: props.consultation.patient.name, href: `/consultations/${props.consultation.id}` },
-    ], [props.consultation.id, props.consultation.patient.name]);
+    const breadcrumbs = useMemo(
+        () => [
+            { title: 'Consultations', href: '/consultations' },
+            { title: props.consultation.patient.name, href: `/consultations/${props.consultation.id}` },
+        ],
+        [props.consultation.id, props.consultation.patient.name],
+    );
 
     const handleTranscription = async (text: string) => {
         setTranscript(text);
@@ -45,13 +47,17 @@ export default function ConsultationShow() {
                     </CardContent>
                 </Card>
 
-                <div className="md:col-span-2 space-y-4">
+                <div className="space-y-4 md:col-span-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Record Consultation</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <VoiceRecorder consultationId={props.consultation.id} onTranscription={(text) => setTranscript(text)} onError={(err) => setError(err)} />
+                            <VoiceRecorder
+                                consultationId={props.consultation.id}
+                                onTranscription={(text) => setTranscript(text)}
+                                onError={(err) => setError(err)}
+                            />
                             {error && <div className="rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700">{error}</div>}
                         </CardContent>
                     </Card>
@@ -62,9 +68,7 @@ export default function ConsultationShow() {
                                 <CardTitle>Transcribed Notes</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="prose max-w-none whitespace-pre-wrap">
-                                    {transcript}
-                                </div>
+                                <div className="prose max-w-none whitespace-pre-wrap">{transcript}</div>
                             </CardContent>
                         </Card>
                     )}
@@ -73,5 +77,3 @@ export default function ConsultationShow() {
         </AppLayout>
     );
 }
-
-

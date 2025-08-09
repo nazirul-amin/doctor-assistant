@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient;
 use App\Models\Consultation;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;

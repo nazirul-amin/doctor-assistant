@@ -1,10 +1,10 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Calendar, Plus, Stethoscope, User, Users } from 'lucide-react';
 import { useMemo } from 'react';
-import { Users, Plus, User, Calendar, Stethoscope } from 'lucide-react';
 
 interface Patient {
     id: number;
@@ -25,15 +25,16 @@ interface PageProps {
 export default function PatientsIndex() {
     const { patients, success, error } = usePage<PageProps>().props;
 
-    const breadcrumbs = useMemo(() => [
-        { title: 'Patients', href: '/patients' }
-    ], []);
+    const breadcrumbs = useMemo(() => [{ title: 'Patients', href: '/patients' }], []);
 
     const getGenderColor = (gender: string) => {
         switch (gender) {
-            case 'male': return 'bg-blue-100 text-blue-800';
-            case 'female': return 'bg-pink-100 text-pink-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'male':
+                return 'bg-blue-100 text-blue-800';
+            case 'female':
+                return 'bg-pink-100 text-pink-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -71,7 +72,7 @@ export default function PatientsIndex() {
                     {patients && patients.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {patients.map((patient) => (
-                                <Card key={patient.id} className="hover:shadow-md transition-shadow">
+                                <Card key={patient.id} className="transition-shadow hover:shadow-md">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-2">
@@ -88,8 +89,6 @@ export default function PatientsIndex() {
                                             <span className="text-muted-foreground">Age:</span>
                                             <span className="font-medium">{patient.age} years</span>
                                         </div>
-                                        
-
 
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="flex items-center gap-1 text-muted-foreground">
@@ -99,9 +98,9 @@ export default function PatientsIndex() {
                                             <Badge variant="outline">{patient.consultations_count}</Badge>
                                         </div>
 
-                                        <div className="pt-2 space-y-2">
-                                            <Button 
-                                                className="w-full" 
+                                        <div className="space-y-2 pt-2">
+                                            <Button
+                                                className="w-full"
                                                 size="sm"
                                                 onClick={() => {
                                                     router.post(route('consultations.createForPatient', patient.id));
@@ -111,9 +110,7 @@ export default function PatientsIndex() {
                                                 Start Consultation
                                             </Button>
                                             <Button asChild variant="outline" className="w-full" size="sm">
-                                                <Link href={route('patients.show', patient.id)}>
-                                                    View Details
-                                                </Link>
+                                                <Link href={route('patients.show', patient.id)}>View Details</Link>
                                             </Button>
                                         </div>
                                     </CardContent>
@@ -123,11 +120,9 @@ export default function PatientsIndex() {
                     ) : (
                         <Card>
                             <CardContent className="p-6 text-center">
-                                <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-medium mb-2">No patients registered</h3>
-                                <p className="text-muted-foreground mb-4">
-                                    Get started by registering your first patient.
-                                </p>
+                                <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                <h3 className="mb-2 text-lg font-medium">No patients registered</h3>
+                                <p className="mb-4 text-muted-foreground">Get started by registering your first patient.</p>
                                 <Button asChild>
                                     <Link href={route('patients.create')}>
                                         <Plus className="mr-2 h-4 w-4" />

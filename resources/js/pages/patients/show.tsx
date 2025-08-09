@@ -1,17 +1,10 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { ArrowLeft, Calendar, Edit, Plus, Stethoscope, User } from 'lucide-react';
 import { useMemo } from 'react';
-import { 
-    User, 
-    Edit, 
-    Calendar, 
-    Stethoscope,
-    ArrowLeft,
-    Plus
-} from 'lucide-react';
 
 interface Patient {
     id: number;
@@ -40,25 +33,35 @@ interface PageProps {
 export default function PatientShow() {
     const { patient, success, error } = usePage<PageProps>().props;
 
-    const breadcrumbs = useMemo(() => [
-        { title: 'Patients', href: '/patients' },
-        { title: patient.name, href: `/patients/${patient.id}` },
-    ], [patient]);
+    const breadcrumbs = useMemo(
+        () => [
+            { title: 'Patients', href: '/patients' },
+            { title: patient.name, href: `/patients/${patient.id}` },
+        ],
+        [patient],
+    );
 
     const getGenderColor = (gender: string) => {
         switch (gender) {
-            case 'male': return 'bg-blue-100 text-blue-800';
-            case 'female': return 'bg-pink-100 text-pink-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'male':
+                return 'bg-blue-100 text-blue-800';
+            case 'female':
+                return 'bg-pink-100 text-pink-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'completed': return 'bg-green-100 text-green-800';
-            case 'draft': return 'bg-yellow-100 text-yellow-800';
-            case 'in_progress': return 'bg-blue-100 text-blue-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'completed':
+                return 'bg-green-100 text-green-800';
+            case 'draft':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'in_progress':
+                return 'bg-blue-100 text-blue-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -82,7 +85,7 @@ export default function PatientShow() {
                                 Back to Patients
                             </Link>
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
                             onClick={() => {
                                 router.post(route('consultations.createForPatient', patient.id));
@@ -134,8 +137,8 @@ export default function PatientShow() {
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t">
-                                    <div className="grid gap-2 md:grid-cols-2 text-sm text-muted-foreground">
+                                <div className="border-t pt-4">
+                                    <div className="grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
                                         <div>
                                             <span className="flex items-center gap-1">
                                                 <Calendar className="h-3 w-3" />
@@ -170,31 +173,24 @@ export default function PatientShow() {
                                             <Link
                                                 key={consultation.id}
                                                 href={route('consultations.show', consultation.id)}
-                                                className="block p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                                                className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
                                             >
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <Badge 
-                                                        className={getStatusColor(consultation.status)} 
-                                                        variant="secondary"
-                                                    >
+                                                <div className="mb-2 flex items-center justify-between">
+                                                    <Badge className={getStatusColor(consultation.status)} variant="secondary">
                                                         {consultation.status}
                                                     </Badge>
                                                     <span className="text-xs text-muted-foreground">
                                                         {new Date(consultation.created_at).toLocaleDateString()}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Dr. {consultation.doctor.name}
-                                                </p>
+                                                <p className="text-sm text-muted-foreground">Dr. {consultation.doctor.name}</p>
                                             </Link>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-6">
-                                        <Stethoscope className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                                        <p className="text-sm text-muted-foreground">
-                                            No consultations yet
-                                        </p>
+                                    <div className="py-6 text-center">
+                                        <Stethoscope className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+                                        <p className="text-sm text-muted-foreground">No consultations yet</p>
                                     </div>
                                 )}
                             </CardContent>

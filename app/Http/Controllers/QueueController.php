@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Queue;
-use App\Models\Patient;
 use App\Models\Consultation;
+use App\Models\Patient;
+use App\Models\Queue;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;

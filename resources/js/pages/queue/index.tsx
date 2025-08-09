@@ -1,21 +1,10 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Activity, CheckCircle, Clock, Play, Plus, Timer, Trash2, User, Users, XCircle } from 'lucide-react';
 import { useMemo } from 'react';
-import { 
-    Clock, 
-    Plus, 
-    User, 
-    Play, 
-    CheckCircle, 
-    XCircle, 
-    Trash2,
-    Users,
-    Activity,
-    Timer
-} from 'lucide-react';
 
 interface QueueItem {
     id: number;
@@ -57,25 +46,31 @@ interface PageProps {
 export default function QueueIndex() {
     const { queue, stats, success, error } = usePage<PageProps>().props;
 
-    const breadcrumbs = useMemo(() => [
-        { title: 'Registration Queue', href: '/queue' }
-    ], []);
+    const breadcrumbs = useMemo(() => [{ title: 'Registration Queue', href: '/queue' }], []);
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'waiting': return 'bg-yellow-100 text-yellow-800';
-            case 'in_progress': return 'bg-blue-100 text-blue-800';
-            case 'completed': return 'bg-green-100 text-green-800';
-            case 'cancelled': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'waiting':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'in_progress':
+                return 'bg-blue-100 text-blue-800';
+            case 'completed':
+                return 'bg-green-100 text-green-800';
+            case 'cancelled':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getGenderColor = (gender: string) => {
         switch (gender) {
-            case 'male': return 'bg-blue-100 text-blue-800';
-            case 'female': return 'bg-pink-100 text-pink-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'male':
+                return 'bg-blue-100 text-blue-800';
+            case 'female':
+                return 'bg-pink-100 text-pink-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -184,15 +179,15 @@ export default function QueueIndex() {
                     {queue && queue.length > 0 ? (
                         <div className="space-y-4">
                             {queue.map((item) => (
-                                <Card key={item.id} className="hover:shadow-md transition-shadow">
+                                <Card key={item.id} className="transition-shadow hover:shadow-md">
                                     <CardContent className="p-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-4">
-                                                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-800 font-bold text-lg">
+                                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-800">
                                                     {item.queue_number}
                                                 </div>
                                                 <div>
-                                                    <div className="flex items-center gap-2 mb-1">
+                                                    <div className="mb-1 flex items-center gap-2">
                                                         <User className="h-4 w-4" />
                                                         <span className="font-medium">{item.name}</span>
                                                         <Badge className={getGenderColor(item.gender)} variant="secondary">
@@ -201,9 +196,7 @@ export default function QueueIndex() {
                                                     </div>
                                                     <div className="text-sm text-muted-foreground">
                                                         Age: {item.age} • Registered: {new Date(item.created_at).toLocaleTimeString()}
-                                                        {item.processed_at && (
-                                                            <> • Processed: {new Date(item.processed_at).toLocaleTimeString()}</>
-                                                        )}
+                                                        {item.processed_at && <> • Processed: {new Date(item.processed_at).toLocaleTimeString()}</>}
                                                     </div>
                                                     {item.processed_by && (
                                                         <div className="text-sm text-muted-foreground">
@@ -212,29 +205,23 @@ export default function QueueIndex() {
                                                     )}
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="flex items-center gap-2">
                                                 <Badge className={getStatusColor(item.status)} variant="secondary">
                                                     {item.status.replace('_', ' ')}
                                                 </Badge>
-                                                
+
                                                 {item.status === 'waiting' && (
-                                                    <Button
-                                                        size="sm"
-                                                        onClick={() => handleProcess(item.id)}
-                                                        className="flex items-center gap-1"
-                                                    >
+                                                    <Button size="sm" onClick={() => handleProcess(item.id)} className="flex items-center gap-1">
                                                         <Play className="h-3 w-3" />
                                                         Process
                                                     </Button>
                                                 )}
-                                                
+
                                                 {item.status === 'in_progress' && item.consultation && (
                                                     <>
                                                         <Button asChild size="sm" variant="outline">
-                                                            <Link href={route('consultations.show', item.consultation.id)}>
-                                                                View Consultation
-                                                            </Link>
+                                                            <Link href={route('consultations.show', item.consultation.id)}>View Consultation</Link>
                                                         </Button>
                                                         <Button
                                                             size="sm"
@@ -247,7 +234,7 @@ export default function QueueIndex() {
                                                         </Button>
                                                     </>
                                                 )}
-                                                
+
                                                 {(item.status === 'waiting' || item.status === 'in_progress') && (
                                                     <Button
                                                         size="sm"
@@ -259,7 +246,7 @@ export default function QueueIndex() {
                                                         Cancel
                                                     </Button>
                                                 )}
-                                                
+
                                                 {(item.status === 'completed' || item.status === 'cancelled') && (
                                                     <Button
                                                         size="sm"
@@ -280,11 +267,9 @@ export default function QueueIndex() {
                     ) : (
                         <Card>
                             <CardContent className="p-6 text-center">
-                                <Clock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-medium mb-2">No patients in queue today</h3>
-                                <p className="text-muted-foreground mb-4">
-                                    Start by adding patients to the registration queue.
-                                </p>
+                                <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                                <h3 className="mb-2 text-lg font-medium">No patients in queue today</h3>
+                                <p className="mb-4 text-muted-foreground">Start by adding patients to the registration queue.</p>
                                 <Button asChild>
                                     <Link href={route('queue.create')}>
                                         <Plus className="mr-2 h-4 w-4" />

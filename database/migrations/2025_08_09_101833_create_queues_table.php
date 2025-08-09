@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('queues', function (Blueprint $table) {
             $table->id();
-            $table->string('name')  ;
-            $table->unsignedInteger('age')  ;
+            $table->string('name');
+            $table->unsignedInteger('age');
             $table->enum('gender', ['male', 'female', 'other']);
             $table->enum('status', ['waiting', 'in_progress', 'completed', 'cancelled'])->default('waiting');
             $table->unsignedBigInteger('patient_id')->nullable();
