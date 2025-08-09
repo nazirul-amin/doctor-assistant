@@ -19,11 +19,12 @@ const loadLameJS = async () => {
 };
 
 interface VoiceRecorderProps {
+    consultationId?: number;
     onTranscription?: (text: string) => void;
     onError?: (error: string) => void;
 }
 
-export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorderProps) {
+export default function VoiceRecorder({ consultationId, onTranscription, onError }: VoiceRecorderProps) {
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -162,6 +163,9 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
         setIsProcessing(true);
 
         try {
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
             // Step 1: Upload the MP3 file first
             const uploadFormData = new FormData();
             uploadFormData.append('audio', file);
@@ -172,6 +176,7 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
                 headers: {
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken || '',
                 },
             });
 
@@ -187,6 +192,9 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
             transcribeFormData.append('file_path', uploadResult.data.path);
             transcribeFormData.append('model', 'whisper-large-v3-turbo');
             transcribeFormData.append('response_format', 'json');
+            if (consultationId) {
+                transcribeFormData.append('consultation_id', String(consultationId));
+            }
 
             const transcribeResponse = await fetch('/api/voice/transcribe', {
                 method: 'POST',
@@ -194,6 +202,7 @@ export default function VoiceRecorder({ onTranscription, onError }: VoiceRecorde
                 headers: {
                     Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken || '',
                 },
             });
 
