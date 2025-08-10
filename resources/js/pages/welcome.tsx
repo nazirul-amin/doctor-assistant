@@ -1,47 +1,77 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { Mic, Activity, FileText } from 'lucide-react';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
 
+    const navLinkClass =
+        "relative px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-gradient-to-r from-blue-600 to-indigo-600 after:transition-all after:duration-300 hover:after:w-full";
+
+    const steps = [
+        {
+            icon: <Mic className="h-7 w-7 text-blue-600" strokeWidth={2.2} />,
+            bg: "bg-blue-100",
+            title: "1. Record Consultation",
+            desc: "AI listens during the consultation, capturing every detail without interrupting the conversation."
+        },
+        {
+            icon: <Activity className="h-7 w-7 text-green-600" strokeWidth={2.2} />,
+            bg: "bg-green-100",
+            title: "2. Real-Time Analysis",
+            desc: "AI extracts key details — patient history, symptoms, and concerns — while spotting patterns and important clues."
+        },
+        {
+            icon: <FileText className="h-7 w-7 text-purple-600" strokeWidth={2.2} />,
+            bg: "bg-purple-100",
+            title: "3. Structured Summary",
+            desc: "Receive a concise, structured summary that highlights relevant findings, enabling faster, more accurate diagnoses."
+        }
+    ];
+
     return (
         <>
-            <Head title="Doctor Assistant - AI-Powered Medical Diagnosis">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-            </Head>
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-                {/* Header Navigation */}
+            <Head title="Welcome" />
+
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col">
+                {/* Header */}
                 <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/80 backdrop-blur-md">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 items-center justify-between">
+                            {/* Logo */}
                             <div className="flex items-center space-x-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-green-500">
-                                    <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600">
+                                    <svg
+                                        className="h-6 w-6 text-white"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             strokeWidth={2}
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                                         />
                                     </svg>
                                 </div>
-                                <span className="text-xl font-semibold">Doctor Assistant</span>
+                                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                    DocuScribe AI
+                                </span>
                             </div>
-                            <nav className="flex items-center space-x-4">
+
+                            {/* Navigation */}
+                            <nav className="flex items-center space-x-6">
                                 {auth.user ? (
                                     <Link
                                         href={route('dashboard')}
-                                        className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                                        className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:scale-[1.03] transition-transform duration-200"
                                     >
-                                        Dashboard
+                                        Go to Dashboard
                                     </Link>
                                 ) : (
                                     <>
-                                        <Link
-                                            href={route('login')}
-                                            className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-blue-600"
-                                        >
+                                        <Link href={route('login')} className={navLinkClass}>
                                             Log in
                                         </Link>
                                     </>
@@ -51,41 +81,31 @@ export default function Welcome() {
                     </div>
                 </header>
 
-                {/* Hero Section */}
-                <section className="relative overflow-hidden">
+                {/* Hero */}
+                <section className="relative flex-1">
                     <div className="mx-auto max-w-7xl px-4 pt-20 pb-16 sm:px-6 lg:px-8">
                         <div className="grid items-center gap-12 lg:grid-cols-2">
-                            <div className="space-y-8">
-                                <div className="space-y-4">
-                                    <h1 className="text-5xl leading-tight font-bold text-gray-900 lg:text-6xl">
-                                        AI-Powered
-                                        <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                                            {' '}
-                                            Medical Assistant
-                                        </span>
-                                    </h1>
-                                    <p className="text-xl leading-relaxed text-gray-600">
-                                        Empowering doctors with intelligent AI tools to enhance patient diagnosis and improve healthcare outcomes.
-                                    </p>
+                            <div className="space-y-6 animate-fadeIn">
+                                <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 shadow-sm">
+                                    <span className="mr-2 h-2 w-2 rounded-full bg-blue-600"></span>
+                                    AI-Powered Medical Documentation
                                 </div>
-
-                                <div className="flex flex-col gap-4 sm:flex-row">
-                                    <Link
-                                        href={route('dashboard')}
-                                        className="transform rounded-xl bg-gradient-to-r from-blue-600 to-green-600 px-8 py-4 text-center text-lg font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                                    >
-                                        Get Started
-                                    </Link>
-                                    <button className="rounded-xl border-2 border-gray-300 px-8 py-4 text-lg font-semibold text-gray-700 transition-colors hover:border-blue-500 hover:text-blue-600">
-                                        Learn More
-                                    </button>
-                                </div>
+                                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+                                    Focus on Your Patients,{" "}
+                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                        Not Paperwork
+                                    </span>
+                                </h1>
+                                <p className="text-lg text-gray-600 max-w-xl">
+                                    Save time, reduce admin work, and improve patient care with AI-driven documentation during consultations.
+                                </p>
                             </div>
 
-                            <div className="relative">
-                                <div className="rounded-3xl bg-gradient-to-br from-blue-100 to-green-100 p-8 shadow-2xl">
-                                    <div className="rounded-2xl bg-white p-6 shadow-lg">
-                                        <div className="mb-4 flex items-center space-x-3">
+                            {/* Illustration */}
+                            <div className="relative animate-slideUp">
+                                <div className="rounded-3xl bg-gradient-to-br from-blue-100 to-green-100 p-6 shadow-lg hover:shadow-2xl transition-shadow">
+                                    <div className="rounded-2xl bg-white p-6 shadow-sm space-y-4">
+                                        <div className="flex items-center space-x-3">
                                             <div className="h-3 w-3 rounded-full bg-red-500"></div>
                                             <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
                                             <div className="h-3 w-3 rounded-full bg-green-500"></div>
@@ -107,8 +127,8 @@ export default function Welcome() {
                                             </div>
                                             <div className="flex items-start justify-end space-x-3">
                                                 <div className="max-w-xs rounded-2xl bg-blue-600 px-4 py-2 text-white">
-                                                    <p className="text-sm">AI Analysis suggests:</p>
-                                                    <ul className="mt-2 space-y-1 text-sm">
+                                                    <p className="text-sm font-medium">AI Analysis suggests:</p>
+                                                    <ul className="mt-1 space-y-1 text-sm">
                                                         <li>• Possible viral infection</li>
                                                         <li>• Consider blood tests</li>
                                                         <li>• Monitor temperature</li>
@@ -131,84 +151,51 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-
-                {/* Features Section */}
+                
+                {/* How It Works */}
                 <section className="bg-white py-20">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="mb-16 text-center">
-                            <h2 className="mb-4 text-4xl font-bold text-gray-900">Key Features</h2>
-                            <p className="mx-auto max-w-3xl text-xl text-gray-600">
-                                Our AI-powered platform is designed to enhance medical practice and improve patient care.
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                                How It Works
+                            </h2>
+                            <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                                Doctors often face time constraints during patient consultations. 
+                                Our AI streamlines the process by transcribing, analyzing, and summarizing 
+                                conversations in real time, helping you focus on the patient instead of paperwork.
                             </p>
                         </div>
 
-                        <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
-                            <div className="rounded-2xl bg-gray-50 p-8 transition-shadow hover:shadow-lg">
-                                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 shadow-sm">
-                                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                            {steps.map((step, i) => (
+                                <div
+                                    key={i}
+                                    className="flex flex-col items-center text-center space-y-4 p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition duration-300"
+                                    style={{
+                                        animation: `fadeUp 0.6s ease ${i * 0.15}s forwards`,
+                                        opacity: 0
+                                    }}
+                                >
+                                    <div
+                                        className={`flex h-14 w-14 items-center justify-center rounded-full ${step.bg} transition-transform duration-300 hover:scale-110 hover:rotate-6`}
+                                    >
+                                        {step.icon}
+                                    </div>
+                                    <h3 className="font-semibold text-lg">{step.title}</h3>
+                                    <p className="text-gray-600 text-sm">{step.desc}</p>
                                 </div>
-                                <h3 className="mb-3 text-xl font-semibold text-gray-900">AI-Powered Diagnosis Assistance</h3>
-                                <p className="leading-relaxed text-gray-600">
-                                    Our AI will assist doctors in diagnosing patient symptoms by analyzing medical data, providing insights, and
-                                    suggesting potential diagnoses to enhance clinical decision-making.
-                                </p>
-                            </div>
-
-                            <div className="rounded-2xl bg-gray-50 p-8 transition-shadow hover:shadow-lg">
-                                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 shadow-sm">
-                                    <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                </div>
-                                <h3 className="mb-3 text-xl font-semibold text-gray-900">More Features Coming Soon</h3>
-                                <p className="leading-relaxed text-gray-600">
-                                    We're continuously developing new features to improve the Doctor Assistant platform. Stay tuned for exciting
-                                    updates and enhanced capabilities.
-                                </p>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </section>
 
-                {/* CTA Section */}
-                <section className="bg-gradient-to-r from-blue-600 to-green-600 py-20">
-                    <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-                        <h2 className="mb-6 text-4xl font-bold text-white">Ready to Enhance Your Medical Practice?</h2>
-                        <p className="mb-8 text-xl text-blue-100">Join the future of healthcare with AI-powered diagnostic assistance.</p>
-                    </div>
-                </section>
-
-                {/* Footer */}
-                <footer className="bg-gray-900 py-12 text-white">
-                    <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-                        <div className="mb-4 flex items-center justify-center space-x-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-green-500">
-                                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <span className="text-xl font-semibold">Doctor Assistant</span>
-                        </div>
-                        <p className="mx-auto mb-4 max-w-md text-gray-400">
-                            AI-powered medical assistant helping doctors provide better patient care through intelligent diagnosis support.
-                        </p>
-                        <div className="mt-8 border-t border-gray-800 pt-8 text-gray-400">
-                            <p>&copy; 2024 Doctor Assistant. All rights reserved.</p>
-                        </div>
-                    </div>
-                </footer>
+                {/* Animations */}
+                <style>{`
+                    @keyframes fadeUp {
+                        0% { transform: translateY(20px); opacity: 0; }
+                        100% { transform: translateY(0); opacity: 1; }
+                    }
+                `}</style>
             </div>
         </>
     );
