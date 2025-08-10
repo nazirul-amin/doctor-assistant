@@ -1,8 +1,12 @@
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
+export type UserRole = 'clinic assistant' | 'doctor';
+
 export interface Auth {
     user: User;
+    permissions: string[];
+    roles: UserRole[];
 }
 
 export interface BreadcrumbItem {
@@ -20,6 +24,8 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    permission?: string;
+    roles?: UserRole[];
 }
 
 export interface SharedData {

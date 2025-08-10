@@ -41,10 +41,15 @@ interface PageProps {
     stats: Stats;
     success?: string;
     error?: string;
+    auth: {
+        roles: string[];
+    };
+    [key: string]: any;
 }
 
 export default function QueueIndex() {
-    const { queue, stats, success, error } = usePage<PageProps>().props;
+    const { queue, stats, success, error, auth } = usePage<PageProps & { auth: { roles: string[] } }>().props;
+    const isDoctor = auth?.roles?.includes('doctor');
 
     const breadcrumbs = useMemo(() => [{ title: 'Registration Queue', href: '/queue' }], []);
 
@@ -106,12 +111,12 @@ export default function QueueIndex() {
                         <Clock className="h-6 w-6" />
                         <h1 className="text-2xl font-semibold">Registration Queue</h1>
                     </div>
-                    <Button asChild>
+                    {!isDoctor && (<Button asChild>
                         <Link href={route('queue.create')}>
                             <Plus className="mr-2 h-4 w-4" />
                             Add to Queue
                         </Link>
-                    </Button>
+                    </Button>)}
                 </div>
 
                 {success && (
@@ -211,52 +216,56 @@ export default function QueueIndex() {
                                                     {item.status.replace('_', ' ')}
                                                 </Badge>
 
-                                                {item.status === 'waiting' && (
-                                                    <Button size="sm" onClick={() => handleProcess(item.id)} className="flex items-center gap-1">
-                                                        <Play className="h-3 w-3" />
-                                                        Process
-                                                    </Button>
-                                                )}
-
-                                                {item.status === 'in_progress' && item.consultation && (
+                                                {isDoctor && (
                                                     <>
-                                                        <Button asChild size="sm" variant="outline">
-                                                            <Link href={route('consultations.show', item.consultation.id)}>View Consultation</Link>
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            onClick={() => handleComplete(item.id)}
-                                                            className="flex items-center gap-1"
-                                                        >
-                                                            <CheckCircle className="h-3 w-3" />
-                                                            Complete
-                                                        </Button>
+                                                        {item.status === 'waiting' && (
+                                                            <Button size="sm" onClick={() => handleProcess(item.id)} className="flex items-center gap-1">
+                                                                <Play className="h-3 w-3" />
+                                                                Process
+                                                            </Button>
+                                                        )}
+
+                                                        {item.status === 'in_progress' && item.consultation && (
+                                                            <>
+                                                                <Button asChild size="sm" variant="outline">
+                                                                    <Link href={route('consultations.show', item.consultation.id)}>View Consultation</Link>
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    onClick={() => handleComplete(item.id)}
+                                                                    className="flex items-center gap-1"
+                                                                >
+                                                                    <CheckCircle className="h-3 w-3" />
+                                                                    Complete
+                                                                </Button>
+                                                            </>
+                                                        )}
+
+                                                        {(item.status === 'waiting' || item.status === 'in_progress') && (
+                                                            <Button
+                                                                size="sm"
+                                                                variant="destructive"
+                                                                onClick={() => handleCancel(item.id)}
+                                                                className="flex items-center gap-1"
+                                                            >
+                                                                <XCircle className="h-3 w-3" />
+                                                                Cancel
+                                                            </Button>
+                                                        )}
+
+                                                        {(item.status === 'completed' || item.status === 'cancelled') && (
+                                                            <Button
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                onClick={() => handleDelete(item.id)}
+                                                                className="flex items-center gap-1 text-red-600 hover:text-red-700"
+                                                            >
+                                                                <Trash2 className="h-3 w-3" />
+                                                                Delete
+                                                            </Button>
+                                                        )}
                                                     </>
-                                                )}
-
-                                                {(item.status === 'waiting' || item.status === 'in_progress') && (
-                                                    <Button
-                                                        size="sm"
-                                                        variant="destructive"
-                                                        onClick={() => handleCancel(item.id)}
-                                                        className="flex items-center gap-1"
-                                                    >
-                                                        <XCircle className="h-3 w-3" />
-                                                        Cancel
-                                                    </Button>
-                                                )}
-
-                                                {(item.status === 'completed' || item.status === 'cancelled') && (
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() => handleDelete(item.id)}
-                                                        className="flex items-center gap-1 text-red-600 hover:text-red-700"
-                                                    >
-                                                        <Trash2 className="h-3 w-3" />
-                                                        Delete
-                                                    </Button>
                                                 )}
                                             </div>
                                         </div>
@@ -270,12 +279,12 @@ export default function QueueIndex() {
                                 <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="mb-2 text-lg font-medium">No patients in queue today</h3>
                                 <p className="mb-4 text-muted-foreground">Start by adding patients to the registration queue.</p>
-                                <Button asChild>
+                                {!isDoctor && (<Button asChild>
                                     <Link href={route('queue.create')}>
                                         <Plus className="mr-2 h-4 w-4" />
                                         Add to Queue
                                     </Link>
-                                </Button>
+                                </Button>)}
                             </CardContent>
                         </Card>
                     )}
