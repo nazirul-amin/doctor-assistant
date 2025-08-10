@@ -7,6 +7,99 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import MarkdownIt from 'markdown-it';
 
+// Custom markdown styles
+const markdownStyles = `
+  .markdown-body {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: #1f2937;
+  }
+  .markdown-body h1, 
+  .markdown-body h2, 
+  .markdown-body h3, 
+  .markdown-body h4, 
+  .markdown-body h5, 
+  .markdown-body h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .markdown-body h1 { font-size: 2em; }
+  .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+  .markdown-body h3 { font-size: 1.25em; }
+  .markdown-body p { margin-bottom: 1em; }
+  .markdown-body ul, 
+  .markdown-body ol { 
+    padding-left: 2em; 
+    margin-bottom: 1em;
+  }
+  .markdown-body li {
+    margin-bottom: 0.5em;
+  }
+  .markdown-body li > p { 
+    margin-bottom: 0.5em; 
+  }
+  .markdown-body code {
+    font-family: 'Fira Code', 'Menlo', monospace;
+    background-color: #f3f4f6;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .markdown-body pre {
+    background-color: #1e293b;
+    border-radius: 8px;
+    padding: 1em;
+    margin: 1em 0;
+    overflow-x: auto;
+  }
+  .markdown-body pre code {
+    background-color: transparent;
+    color: #e2e8f0;
+    padding: 0;
+  }
+  .markdown-body a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .markdown-body a:hover {
+    text-decoration: underline;
+  }
+  .markdown-body blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1em;
+    margin: 1em 0;
+    color: #4b5563;
+  }
+  .markdown-body table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+  }
+  .markdown-body th,
+  .markdown-body td {
+    border: 1px solid #e5e7eb;
+    padding: 0.5em 1em;
+    text-align: left;
+  }
+  .markdown-body th {
+    background-color: #f9fafb;
+    font-weight: 600;
+  }
+  .markdown-body img {
+    max-width: 100%;
+    border-radius: 4px;
+    margin: 1em 0;
+  }
+`;
+
+// Add styles to document head
+const styleElement = document.createElement('style');
+styleElement.textContent = markdownStyles;
+document.head.appendChild(styleElement);
+
 interface ConsultationPageProps {
     consultation: {
         id: number;
@@ -166,7 +259,7 @@ export default function ConsultationShow() {
                         {/* Summary */}
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
-                                <CardTitle>AI-Powered Summary</CardTitle>
+                                <CardTitle>AI Powered Summary</CardTitle>
                                 {!summary && transcript && (
                                     <Button 
                                         variant="outline" 
@@ -212,9 +305,13 @@ export default function ConsultationShow() {
                                         <span>Generating summary...</span>
                                     </div>
                                 ) : summary ? (
-                                    <div className="prose max-w-none" dangerouslySetInnerHTML={{
+                                    <div className="markdown-body" dangerouslySetInnerHTML={{
                                         __html: (() => {
-                                            const md = new MarkdownIt();
+                                            const md = new MarkdownIt({
+                                                html: true,
+                                                linkify: true,
+                                                typographer: true
+                                            });
                                             return md.render(props.consultation.summary || '');
                                         })()
                                     }} />

@@ -29,7 +29,7 @@ class QueueController extends Controller
         $completedCount = $todayQueue->where('status', 'completed')->count();
 
         return Inertia::render('queue/index', [
-            'queue' => $todayQueue,
+            'queue' => $todayQueue->where('status', '!=', 'completed'),
             'stats' => [
                 'waiting' => $waitingCount,
                 'in_progress' => $inProgressCount,
