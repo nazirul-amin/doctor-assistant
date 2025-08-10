@@ -96,38 +96,50 @@ class ConsultationController extends Controller
                     'message' => 'No transcript available for summarization',
                 ], 400);
             }
-
-            $systemPrompt = "You are a medical assistant. Please analyze the following doctor-patient consultation transcript and provide:\n";
-            $systemPrompt .= "1. A brief summary of the consultation\n";
-            $systemPrompt .= "2. Key symptoms and patient complaints\n";
-            $systemPrompt .= "3. Potential diagnoses (list as possibilities, not certainties)\n";
-            $systemPrompt .= "4. Recommended tests or follow-up actions\n";
-            $systemPrompt .= "5. Any immediate concerns that require attention";
-
+    
+            $systemPrompt = <<<PROMPT
+                You are a highly accurate and detail oriented medical assistant helping doctors analyze consultations.
+                Your goal is to provide a structured, clear, and clinically useful summary of a doctor-patient consultation transcript.
+                
+                IMPORTANT:
+                - Base your analysis ONLY on the transcript.
+                - If important information is missing, clearly state "Information Missing" in the relevant section.
+                - Maintain medical professionalism and accuracy.
+                
+                Your output must follow this EXACT structure:
+                
+                1. Brief Summary
+                2. Key Symptoms and Patient Complaints
+                3. Potential Diagnoses (Possible, Not Certain)
+                4. Recommended Tests or Follow-up Actions
+                5. Immediate Concerns
+                6. Possible Questions to Ask for Better Diagnosis
+            PROMPT;
+    
             $response = Groq::chat()->completions()->create([
                 'model' => 'meta-llama/llama-4-maverick-17b-128e-instruct',
                 'messages' => [
                     ['role' => 'system', 'content' => $systemPrompt],
                     ['role' => 'user', 'content' => "Here is the consultation transcript to analyze:\n\n" . $consultation->transcript]
                 ],
-                'temperature' => 0.7,
-                'max_tokens' => 2000,
+                'temperature' => 0.2,
+                'max_tokens' => 8192,
             ]);
-
-            $summary = $response['choices'][0]['message']['content'];
-
+    
+            $summary = $response['choices'][0]['message']['content'] ?? null;
+    
             // Update consultation with summary
             $consultation->update([
                 'summary' => $summary,
                 'status' => 'summarized'
             ]);
-
+    
             return response()->json([
                 'success' => true,
                 'summary' => $summary
             ]);
-
-        } catch (\Exception $e) {
+    
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate summary: ' . $e->getMessage(),
