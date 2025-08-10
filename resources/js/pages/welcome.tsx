@@ -44,12 +44,6 @@ export default function Welcome() {
                                         >
                                             Log in
                                         </Link>
-                                        <Link
-                                            href={route('register')}
-                                            className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-                                        >
-                                            Get Started
-                                        </Link>
                                     </>
                                 )}
                             </nav>
@@ -77,7 +71,7 @@ export default function Welcome() {
 
                                 <div className="flex flex-col gap-4 sm:flex-row">
                                     <Link
-                                        href={route('consultations.index')}
+                                        href={route('dashboard')}
                                         className="transform rounded-xl bg-gradient-to-r from-blue-600 to-green-600 px-8 py-4 text-center text-lg font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                                     >
                                         Get Started
@@ -188,12 +182,6 @@ export default function Welcome() {
                     <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
                         <h2 className="mb-6 text-4xl font-bold text-white">Ready to Enhance Your Medical Practice?</h2>
                         <p className="mb-8 text-xl text-blue-100">Join the future of healthcare with AI-powered diagnostic assistance.</p>
-                        <Link
-                            href={route('register')}
-                            className="inline-block rounded-xl bg-white px-8 py-4 text-lg font-semibold text-blue-600 transition-colors hover:bg-gray-100"
-                        >
-                            Get Started Today
-                        </Link>
                     </div>
                 </section>
 

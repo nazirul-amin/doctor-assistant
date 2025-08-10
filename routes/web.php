@@ -15,7 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Queue routes
-    Route::get('queue', [QueueController::class, 'index'])->name('queue.index');
+    Route::get('queue', [QueueController::class, 'index'])->name('dashboard');
     Route::get('queue/create', [QueueController::class, 'create'])->name('queue.create');
     Route::post('queue', [QueueController::class, 'store'])->name('queue.store');
     Route::post('queue/{queue}/process', [QueueController::class, 'process'])->name('queue.process');
