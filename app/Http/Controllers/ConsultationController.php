@@ -97,10 +97,9 @@ class ConsultationController extends Controller
             Your role is to analyze a doctor patient consultation transcript and produce a structured, clear, and clinically useful summary.
             
             **Critical Guidelines:**
-            - Base your analysis **only** on the information provided in the transcript.  
-            - Do **not** infer or guess details not explicitly mentioned.  
-            - If specific information is absent, write **"Information Missing"** in that section.  
-            - Maintain precise medical terminology and professional tone throughout.  
+            - Base your analysis on the information provided in the transcript.
+            - If specific information is absent, write **"Information Missing"** in that section.
+            - Maintain precise medical terminology and professional tone throughout.
             - Ensure all findings are logically consistent and supported by the transcript.
             
             **Reasoning Process (Chain of Thought — think internally, do not include in output):**
