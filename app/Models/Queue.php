@@ -55,7 +55,7 @@ class Queue extends Model
     // Scope for today's queue
     public function scopeToday($query)
     {
-        return $query->whereDate('created_at', now()->toDateString());
+        return $query->where('status', '!=', 'completed')->whereDate('created_at', now()->toDateString());
     }
 
     // Scope for waiting status
