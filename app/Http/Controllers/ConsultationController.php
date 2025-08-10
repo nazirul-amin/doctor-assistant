@@ -18,9 +18,7 @@ class ConsultationController extends Controller
 {
     public function index(): Response
     {
-        if (! Gate::allows('viewAny', Consultation::class)) {
-            abort(403, 'You do not have permission to view consultations.');
-        }
+        Gate::authorize('viewAny', Consultation::class);
 
         $consultations = Consultation::with('patient')
             ->where('doctor_id', auth()->id())
@@ -34,9 +32,7 @@ class ConsultationController extends Controller
 
     public function show(Consultation $consultation): Response
     {
-        if (! Gate::allows('view', $consultation)) {
-            abort(403, 'You do not have permission to view this consultation.');
-        }
+        Gate::authorize('view', $consultation);
         $consultation->load('patient');
 
         return Inertia::render('consultations/show', [
@@ -175,12 +171,7 @@ class ConsultationController extends Controller
      */
     public function complete(Consultation $consultation)
     {
-        if (! Gate::allows('update', $consultation)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You do not have permission to complete this consultation.',
-            ], 403);
-        }
+        Gate::authorize('update', $consultation);
 
         try {
             // Update the consultation

@@ -14,9 +14,7 @@ class QueueController extends Controller
 {
     public function index(): Response
     {
-        if (! Gate::allows('viewAny', Queue::class)) {
-            abort(403, 'You do not have permission to view the queue.');
-        }
+        Gate::authorize('viewAny', Queue::class);
 
         $todayQueue = Queue::today()
             ->with(['patient', 'consultation', 'processedBy'])
@@ -43,9 +41,7 @@ class QueueController extends Controller
 
     public function store(Request $request)
     {
-        if (! Gate::allows('create', Queue::class)) {
-            abort(403, 'You do not have permission to add to the queue.');
-        }
+        Gate::authorize('create', Queue::class);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -69,9 +65,7 @@ class QueueController extends Controller
 
     public function process(Queue $queue)
     {
-        if (! Gate::allows('process', $queue)) {
-            abort(403, 'You do not have permission to process the queue.');
-        }
+        Gate::authorize('process', $queue);
 
         if ($queue->status !== 'waiting') {
             return redirect()->route('dashboard')
@@ -122,9 +116,7 @@ class QueueController extends Controller
 
     public function cancel(Queue $queue)
     {
-        if (! Gate::allows('cancel', $queue)) {
-            abort(403, 'You do not have permission to delete the queue.');
-        }
+        Gate::authorize('cancel', $queue);
 
         if ($queue->status === 'completed') {
             return redirect()->route('dashboard')
@@ -141,9 +133,7 @@ class QueueController extends Controller
 
     public function destroy(Queue $queue)
     {
-        if (! Gate::allows('cancel', $queue)) {
-            abort(403, 'You do not have permission to delete the queue.');
-        }
+        Gate::authorize('cancel', $queue);
 
         if ($queue->status === 'in_progress') {
             return back()->with('error', 'Cannot delete a queue that is in progress.');
