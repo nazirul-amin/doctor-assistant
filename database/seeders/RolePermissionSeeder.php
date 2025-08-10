@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -20,7 +20,7 @@ class RolePermissionSeeder extends Seeder
             'add queue',
             'process queue',
             'cancel queue',
-            'view consultation'
+            'view consultation',
         ];
 
         foreach ($permissions as $permission) {
@@ -31,7 +31,7 @@ class RolePermissionSeeder extends Seeder
         $clinicAssistant = Role::findOrCreate('clinic assistant');
         $clinicAssistant->syncPermissions([
             'view queue',
-            'add queue'
+            'add queue',
         ]);
 
         $doctor = Role::findOrCreate('doctor');
@@ -39,7 +39,7 @@ class RolePermissionSeeder extends Seeder
             'view queue',
             'process queue',
             'cancel queue',
-            'view consultation'
+            'view consultation',
         ]);
 
         // Create clinic assistant user

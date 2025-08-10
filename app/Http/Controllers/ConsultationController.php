@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Consultation;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -19,7 +18,7 @@ class ConsultationController extends Controller
 {
     public function index(): Response
     {
-        if (!Gate::allows('viewAny', Consultation::class)) {
+        if (! Gate::allows('viewAny', Consultation::class)) {
             abort(403, 'You do not have permission to view consultations.');
         }
 
@@ -35,7 +34,7 @@ class ConsultationController extends Controller
 
     public function show(Consultation $consultation): Response
     {
-        if (!Gate::allows('view', $consultation)) {
+        if (! Gate::allows('view', $consultation)) {
             abort(403, 'You do not have permission to view this consultation.');
         }
         $consultation->load('patient');
@@ -96,8 +95,8 @@ class ConsultationController extends Controller
                     'message' => 'No transcript available for summarization',
                 ], 400);
             }
-    
-            $systemPrompt = <<<PROMPT
+
+            $systemPrompt = <<<'PROMPT'
             You are a highly accurate, detail-oriented, and clinically professional medical assistant.  
             Your role is to analyze a doctor patient consultation transcript and produce a structured, clear, and clinically useful summary.
             
@@ -136,34 +135,34 @@ class ConsultationController extends Controller
             6. **Possible Questions to Ask for Better Diagnosis**  
             _(Suggest questions that could clarify symptoms, history, or other relevant factors.)_
             PROMPT;
-    
+
             $response = Groq::chat()->completions()->create([
                 'model' => 'llama-3.1-8b-instant',
                 'messages' => [
                     ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user', 'content' => "Here is the consultation transcript to analyze:\n\n" . $consultation->transcript]
+                    ['role' => 'user', 'content' => "Here is the consultation transcript to analyze:\n\n".$consultation->transcript],
                 ],
                 'temperature' => 0.2,
                 'max_tokens' => 8192,
             ]);
-    
+
             $summary = $response['choices'][0]['message']['content'] ?? null;
-    
+
             // Update consultation with summary
             $consultation->update([
                 'summary' => $summary,
-                'status' => 'summarized'
+                'status' => 'summarized',
             ]);
-    
+
             return response()->json([
                 'success' => true,
-                'summary' => $summary
+                'summary' => $summary,
             ]);
-    
+
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate summary: ' . $e->getMessage(),
+                'message' => 'Failed to generate summary: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -176,7 +175,7 @@ class ConsultationController extends Controller
      */
     public function complete(Consultation $consultation)
     {
-        if (!Gate::allows('update', $consultation)) {
+        if (! Gate::allows('update', $consultation)) {
             return response()->json([
                 'success' => false,
                 'message' => 'You do not have permission to complete this consultation.',
@@ -205,7 +204,7 @@ class ConsultationController extends Controller
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to complete consultation: ' . $e->getMessage(),
+                'message' => 'Failed to complete consultation: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -257,21 +256,20 @@ class ConsultationController extends Controller
             // Extract transcription text based on response format
             $transcription = isset($response['text']) ? $response['text'] : $response;
 
-            $systemPrompt = "
+            $systemPrompt = '
                 Below is a text conversation between a doctor and a patient. DO NOT translate the conversation.
 
-                <transcription>"
+                <transcription>'
                     .$transcription.
-                "</transcription>
+                '</transcription>
                 
                 Take all the right context on my transcription and despite the useless information, output the result.
      
                 Response as a question and answer log, no extra text and plain text only.
 
                 IF the transcription is incomplete. Response: Transcription is incomplete.
-            ";
-            
-            
+            ';
+
             $finalResponse = Groq::chat()->completions()->create([
                 'model' => 'llama-3.1-8b-instant',
                 'messages' => [

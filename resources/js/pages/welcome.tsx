@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Mic, Activity, FileText } from 'lucide-react';
+import { Activity, FileText, Mic } from 'lucide-react';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
@@ -11,29 +11,29 @@ export default function Welcome() {
     const steps = [
         {
             icon: <Mic className="h-7 w-7 text-blue-600" strokeWidth={2.2} />,
-            bg: "bg-blue-100",
-            title: "1. Record Consultation",
-            desc: "AI listens during the consultation, capturing every detail without interrupting the conversation."
+            bg: 'bg-blue-100',
+            title: '1. Record Consultation',
+            desc: 'AI listens during the consultation, capturing every detail without interrupting the conversation.',
         },
         {
             icon: <Activity className="h-7 w-7 text-green-600" strokeWidth={2.2} />,
-            bg: "bg-green-100",
-            title: "2. Real-Time Analysis",
-            desc: "AI extracts key details — patient history, symptoms, and concerns — while spotting patterns and important clues."
+            bg: 'bg-green-100',
+            title: '2. Real-Time Analysis',
+            desc: 'AI extracts key details — patient history, symptoms, and concerns — while spotting patterns and important clues.',
         },
         {
             icon: <FileText className="h-7 w-7 text-purple-600" strokeWidth={2.2} />,
-            bg: "bg-purple-100",
-            title: "3. Structured Summary",
-            desc: "Receive a concise, structured summary that highlights relevant findings, enabling faster, more accurate diagnoses."
-        }
+            bg: 'bg-purple-100',
+            title: '3. Structured Summary',
+            desc: 'Receive a concise, structured summary that highlights relevant findings, enabling faster, more accurate diagnoses.',
+        },
     ];
 
     return (
         <>
             <Head title="Welcome" />
 
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col">
+            <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-blue-50">
                 {/* Header */}
                 <header className="sticky top-0 z-50 border-b border-gray-200/50 bg-white/80 backdrop-blur-md">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -41,12 +41,7 @@ export default function Welcome() {
                             {/* Logo */}
                             <div className="flex items-center space-x-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600">
-                                    <svg
-                                        className="h-6 w-6 text-white"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
+                                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
@@ -55,7 +50,7 @@ export default function Welcome() {
                                         />
                                     </svg>
                                 </div>
-                                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-xl font-bold text-transparent">
                                     DocuScribe AI
                                 </span>
                             </div>
@@ -65,7 +60,7 @@ export default function Welcome() {
                                 {auth.user ? (
                                     <Link
                                         href={route('dashboard')}
-                                        className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:scale-[1.03] transition-transform duration-200"
+                                        className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform duration-200 hover:scale-[1.03]"
                                     >
                                         Go to Dashboard
                                     </Link>
@@ -85,26 +80,24 @@ export default function Welcome() {
                 <section className="relative flex-1">
                     <div className="mx-auto max-w-7xl px-4 pt-20 pb-16 sm:px-6 lg:px-8">
                         <div className="grid items-center gap-12 lg:grid-cols-2">
-                            <div className="space-y-6 animate-fadeIn">
+                            <div className="animate-fadeIn space-y-6">
                                 <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 shadow-sm">
                                     <span className="mr-2 h-2 w-2 rounded-full bg-blue-600"></span>
                                     AI-Powered Medical Documentation
                                 </div>
                                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-                                    Focus on Your Patients,{" "}
-                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                                        Not Paperwork
-                                    </span>
+                                    Focus on Your Patients,{' '}
+                                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Not Paperwork</span>
                                 </h1>
-                                <p className="text-lg text-gray-600 max-w-xl">
+                                <p className="max-w-xl text-lg text-gray-600">
                                     Save time, reduce admin work, and improve patient care with AI-driven documentation during consultations.
                                 </p>
                             </div>
 
                             {/* Illustration */}
-                            <div className="relative animate-slideUp">
-                                <div className="rounded-3xl bg-gradient-to-br from-blue-100 to-green-100 p-6 shadow-lg hover:shadow-2xl transition-shadow">
-                                    <div className="rounded-2xl bg-white p-6 shadow-sm space-y-4">
+                            <div className="animate-slideUp relative">
+                                <div className="rounded-3xl bg-gradient-to-br from-blue-100 to-green-100 p-6 shadow-lg transition-shadow hover:shadow-2xl">
+                                    <div className="space-y-4 rounded-2xl bg-white p-6 shadow-sm">
                                         <div className="flex items-center space-x-3">
                                             <div className="h-3 w-3 rounded-full bg-red-500"></div>
                                             <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
@@ -151,18 +144,15 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-                
+
                 {/* How It Works */}
                 <section className="bg-white py-20">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                                How It Works
-                            </h2>
-                            <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
-                                Doctors often face time constraints during patient consultations. 
-                                Our AI streamlines the process by transcribing, analyzing, and summarizing 
-                                conversations in real time, helping you focus on the patient instead of paperwork.
+                        <div className="mb-12 text-center">
+                            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">How It Works</h2>
+                            <p className="mx-auto mt-4 max-w-3xl text-lg text-gray-600">
+                                Doctors often face time constraints during patient consultations. Our AI streamlines the process by transcribing,
+                                analyzing, and summarizing conversations in real time, helping you focus on the patient instead of paperwork.
                             </p>
                         </div>
 
@@ -170,10 +160,10 @@ export default function Welcome() {
                             {steps.map((step, i) => (
                                 <div
                                     key={i}
-                                    className="flex flex-col items-center text-center space-y-4 p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition duration-300"
+                                    className="flex flex-col items-center space-y-4 rounded-xl border border-gray-100 p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
                                     style={{
                                         animation: `fadeUp 0.6s ease ${i * 0.15}s forwards`,
-                                        opacity: 0
+                                        opacity: 0,
                                     }}
                                 >
                                     <div
@@ -181,8 +171,8 @@ export default function Welcome() {
                                     >
                                         {step.icon}
                                     </div>
-                                    <h3 className="font-semibold text-lg">{step.title}</h3>
-                                    <p className="text-gray-600 text-sm">{step.desc}</p>
+                                    <h3 className="text-lg font-semibold">{step.title}</h3>
+                                    <p className="text-sm text-gray-600">{step.desc}</p>
                                 </div>
                             ))}
                         </div>

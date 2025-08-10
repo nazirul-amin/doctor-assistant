@@ -111,12 +111,14 @@ export default function QueueIndex() {
                         <Clock className="h-6 w-6" />
                         <h1 className="text-2xl font-semibold">Registration Queue</h1>
                     </div>
-                    {!isDoctor && (<Button asChild>
-                        <Link href={route('queue.create')}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add to Queue
-                        </Link>
-                    </Button>)}
+                    {!isDoctor && (
+                        <Button asChild>
+                            <Link href={route('queue.create')}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add to Queue
+                            </Link>
+                        </Button>
+                    )}
                 </div>
 
                 {success && (
@@ -219,7 +221,11 @@ export default function QueueIndex() {
                                                 {isDoctor && (
                                                     <>
                                                         {item.status === 'waiting' && (
-                                                            <Button size="sm" onClick={() => handleProcess(item.id)} className="flex items-center gap-1">
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={() => handleProcess(item.id)}
+                                                                className="flex items-center gap-1"
+                                                            >
                                                                 <Play className="h-3 w-3" />
                                                                 Process
                                                             </Button>
@@ -228,7 +234,9 @@ export default function QueueIndex() {
                                                         {item.status === 'in_progress' && item.consultation && (
                                                             <>
                                                                 <Button asChild size="sm" variant="outline">
-                                                                    <Link href={route('consultations.show', item.consultation.id)}>View Consultation</Link>
+                                                                    <Link href={route('consultations.show', item.consultation.id)}>
+                                                                        View Consultation
+                                                                    </Link>
                                                                 </Button>
                                                                 <Button
                                                                     size="sm"
@@ -279,12 +287,14 @@ export default function QueueIndex() {
                                 <Clock className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                                 <h3 className="mb-2 text-lg font-medium">No patients in queue today</h3>
                                 <p className="mb-4 text-muted-foreground">Start by adding patients to the registration queue.</p>
-                                {!isDoctor && (<Button asChild>
-                                    <Link href={route('queue.create')}>
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add to Queue
-                                    </Link>
-                                </Button>)}
+                                {!isDoctor && (
+                                    <Button asChild>
+                                        <Link href={route('queue.create')}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add to Queue
+                                        </Link>
+                                    </Button>
+                                )}
                             </CardContent>
                         </Card>
                     )}

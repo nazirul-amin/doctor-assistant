@@ -5,7 +5,6 @@ import { FormEventHandler, useState } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
@@ -30,7 +29,7 @@ const testUsers = [
         password: 'password',
         permissions: ['View queue', 'Add to queue'],
         description: 'Basic access to manage patient queue',
-        buttonText: 'Login as Clinic Assistant'
+        buttonText: 'Login as Clinic Assistant',
     },
     {
         role: 'Doctor',
@@ -38,8 +37,8 @@ const testUsers = [
         password: 'password',
         permissions: ['View queue', 'Process queue', 'Cancel queue', 'View consultations'],
         description: 'Full access to consultations and patient management',
-        buttonText: 'Login as Doctor'
-    }
+        buttonText: 'Login as Doctor',
+    },
 ];
 
 export default function Login({ status, canResetPassword }: LoginProps) {
@@ -65,7 +64,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 <form className="space-y-6" onSubmit={submit}>
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email address</Label>
+                            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                                Email address
+                            </Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -83,10 +84,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
+                                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                                    Password
+                                </Label>
                                 {canResetPassword && (
-                                    <TextLink 
-                                        href={route('password.request')} 
+                                    <TextLink
+                                        href={route('password.request')}
                                         className="text-xs font-medium text-blue-600 hover:text-blue-500"
                                         tabIndex={5}
                                     >
@@ -124,10 +127,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </div>
 
                     <div>
-                        <Button 
-                            type="submit" 
-                            className="flex w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                            tabIndex={4} 
+                        <Button
+                            type="submit"
+                            className="flex w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+                            tabIndex={4}
                             disabled={processing}
                         >
                             {processing ? (
@@ -135,16 +138,18 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                                     Signing in...
                                 </>
-                            ) : 'Sign in'}
+                            ) : (
+                                'Sign in'
+                            )}
                         </Button>
                     </div>
                 </form>
 
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
-            
+                {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+
                 <div className="mt-8 border-t border-gray-200 pt-6">
                     <Collapsible open={showTestUsers} onOpenChange={setShowTestUsers}>
-                        <CollapsibleTrigger className="group flex w-full items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        <CollapsibleTrigger className="group flex w-full items-center justify-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900">
                             <span>Need test credentials?</span>
                             {showTestUsers ? (
                                 <ChevronUp className="h-4 w-4 text-gray-500 group-hover:text-gray-700" />
@@ -153,10 +158,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             )}
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-4 space-y-4">
-                            <p className="text-center text-sm text-gray-600">
-                                Use these test accounts to explore the application.
-                            </p>
-                            
+                            <p className="text-center text-sm text-gray-600">Use these test accounts to explore the application.</p>
+
                             <div className="space-y-4">
                                 {testUsers.map((user, index) => (
                                     <div key={index} className="overflow-hidden rounded-lg bg-white shadow">
@@ -178,9 +181,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                                     <div className="text-xs font-medium text-gray-600">Permissions:</div>
                                                     <div className="mt-1 flex flex-wrap gap-1.5">
                                                         {user.permissions.map((permission, i) => (
-                                                            <span 
-                                                                key={i} 
-                                                                className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-100"
+                                                            <span
+                                                                key={i}
+                                                                className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-100 ring-inset"
                                                             >
                                                                 {permission}
                                                             </span>
@@ -194,7 +197,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                                     setData({
                                                         email: user.email,
                                                         password: user.password,
-                                                        remember: false
+                                                        remember: false,
                                                     });
                                                     const form = document.querySelector('form');
                                                     if (form) {
@@ -204,7 +207,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                                         }
                                                     }
                                                 }}
-                                                className="mt-4 flex w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                                className="mt-4 flex w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                                             >
                                                 {user.buttonText}
                                             </button>

@@ -6,7 +6,6 @@ use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\Queue;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,7 +14,7 @@ class QueueController extends Controller
 {
     public function index(): Response
     {
-        if (!Gate::allows('viewAny', Queue::class)) {
+        if (! Gate::allows('viewAny', Queue::class)) {
             abort(403, 'You do not have permission to view the queue.');
         }
 
@@ -46,7 +45,7 @@ class QueueController extends Controller
 
     public function store(Request $request)
     {
-        if (!Gate::allows('create', Queue::class)) {
+        if (! Gate::allows('create', Queue::class)) {
             abort(403, 'You do not have permission to add to the queue.');
         }
 
@@ -72,7 +71,7 @@ class QueueController extends Controller
 
     public function process(Queue $queue)
     {
-        if (!Gate::allows('process', $queue)) {
+        if (! Gate::allows('process', $queue)) {
             abort(403, 'You do not have permission to process the queue.');
         }
 
@@ -125,7 +124,7 @@ class QueueController extends Controller
 
     public function cancel(Queue $queue)
     {
-        if (!Gate::allows('cancel', $queue)) {
+        if (! Gate::allows('cancel', $queue)) {
             abort(403, 'You do not have permission to delete the queue.');
         }
 
@@ -144,7 +143,7 @@ class QueueController extends Controller
 
     public function destroy(Queue $queue)
     {
-        if (!Gate::allows('cancel', $queue)) {
+        if (! Gate::allows('cancel', $queue)) {
             abort(403, 'You do not have permission to delete the queue.');
         }
 

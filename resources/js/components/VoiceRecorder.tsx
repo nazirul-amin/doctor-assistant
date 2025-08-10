@@ -25,12 +25,7 @@ interface VoiceRecorderProps {
     autoTranscribe?: boolean;
 }
 
-export default function VoiceRecorder({ 
-    consultationId, 
-    onTranscription, 
-    onError, 
-    autoTranscribe = true 
-}: VoiceRecorderProps) {
+export default function VoiceRecorder({ consultationId, onTranscription, onError, autoTranscribe = true }: VoiceRecorderProps) {
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -58,7 +53,7 @@ export default function VoiceRecorder({
                     // Convert to MP3 format
                     const mp3File = await convertToMp3(blob);
                     setAudioFile(mp3File);
-                    
+
                     // Auto-transcribe if enabled
                     if (autoTranscribe) {
                         await transcribeAudio(mp3File);
@@ -71,7 +66,7 @@ export default function VoiceRecorder({
                         lastModified: Date.now(),
                     });
                     setAudioFile(fallbackFile);
-                    
+
                     // Auto-transcribe the fallback file if enabled
                     if (autoTranscribe) {
                         await transcribeAudio(fallbackFile);

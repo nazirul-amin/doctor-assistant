@@ -1,10 +1,9 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type UserRole } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Clock, Stethoscope, Users, ClipboardList, Settings } from 'lucide-react';
+import { Clock, Stethoscope } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const getNavItems = (userRoles: UserRole[] = [], permissions: string[] = []): NavItem[] => {
@@ -14,34 +13,34 @@ const getNavItems = (userRoles: UserRole[] = [], permissions: string[] = []): Na
             href: '/queue',
             icon: Clock,
             permission: 'view queue',
-            roles: ['clinic assistant', 'doctor']
+            roles: ['clinic assistant', 'doctor'],
         },
         {
             title: 'Consultations',
             href: '/consultations',
             icon: Stethoscope,
             permission: 'view consultation',
-            roles: ['doctor']
+            roles: ['doctor'],
         },
     ];
 
-    return allNavItems.filter(item => {
+    return allNavItems.filter((item) => {
         // If item requires a specific permission, check it
         if (item.permission && !permissions.includes(item.permission)) {
             return false;
         }
-        
+
         // If item is restricted to specific roles, check them
         if (item.roles && item.roles.length > 0) {
-            return item.roles.some(role => userRoles.includes(role));
+            return item.roles.some((role) => userRoles.includes(role));
         }
-        
+
         return true;
     });
 };
 
 export function AppSidebar() {
-    const { auth } = usePage<{ auth: { roles: UserRole[], permissions: string[] } }>().props;
+    const { auth } = usePage<{ auth: { roles: UserRole[]; permissions: string[] } }>().props;
     const { roles = [], permissions = [] } = auth;
     const navItems = getNavItems(roles, permissions);
 
