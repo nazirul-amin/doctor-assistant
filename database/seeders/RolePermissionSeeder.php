@@ -44,7 +44,7 @@ class RolePermissionSeeder extends Seeder
 
         // Create clinic assistant user
         $clinicAssistantUser = User::firstOrCreate(
-            ['email' => 'assistant@example.com'],
+            ['email' => 'assistant@clinic.com'],
             [
                 'name' => 'Clinic Assistant',
                 'password' => bcrypt('password'),
@@ -55,7 +55,7 @@ class RolePermissionSeeder extends Seeder
 
         // Create doctor user
         $doctorUser = User::firstOrCreate(
-            ['email' => 'doctor@example.com'],
+            ['email' => 'doctor@clinic.com'],
             [
                 'name' => 'Doctor',
                 'password' => bcrypt('password'),
