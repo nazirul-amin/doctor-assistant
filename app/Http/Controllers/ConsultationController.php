@@ -150,6 +150,45 @@ class ConsultationController extends Controller
     /**
      * Transcribe audio using Groq
      */
+    /**
+     * Mark consultation as completed
+     */
+    public function complete(Consultation $consultation)
+    {
+        if (!Gate::allows('update', $consultation)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to complete this consultation.',
+            ], 403);
+        }
+
+        try {
+            // Update the consultation
+            $consultation->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            // Update the associated queue if it exists and is still in progress
+            if ($consultation->queue) {
+                $consultation->queue->update([
+                    'status' => 'completed',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Consultation and associated queue marked as completed successfully',
+                'consultation' => $consultation->fresh(),
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to complete consultation: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function transcribe(Request $request)
     {
         $validator = Validator::make($request->all(), [

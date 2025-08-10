@@ -72,7 +72,7 @@ export default function ConsultationShow() {
             <div className="space-y-6 p-4">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold">Consultation Details</h1>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                             props.consultation.status === 'completed' ? 'bg-green-100 text-green-800' :
                             props.consultation.status === 'summarized' ? 'bg-blue-100 text-blue-800' :
@@ -80,6 +80,38 @@ export default function ConsultationShow() {
                         }`}>
                             {props.consultation.status || 'in progress'}
                         </span>
+                        {props.consultation.status !== 'completed' && (
+                            <Button 
+                                variant="default"
+                                size="sm"
+                                onClick={async () => {
+                                    if (window.confirm('Are you sure you want to mark this consultation as complete? This action cannot be undone.')) {
+                                        try {
+                                            const response = await fetch(`/consultations/${props.consultation.id}/complete`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                                                },
+                                            });
+                                            
+                                            if (response.ok) {
+                                                router.reload();
+                                            } else {
+                                                const data = await response.json();
+                                                setError(data.message || 'Failed to complete consultation');
+                                            }
+                                        } catch (err) {
+                                            setError('An error occurred while completing the consultation');
+                                            console.error('Completion error:', err);
+                                        }
+                                    }
+                                }}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                Complete Consultation
+                            </Button>
+                        )}
                     </div>
                 </div>
 

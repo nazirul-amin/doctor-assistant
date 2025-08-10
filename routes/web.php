@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('consultations', [ConsultationController::class, 'index'])->name('consultations.index');
     Route::get('consultations/{consultation}', [ConsultationController::class, 'show'])->name('consultations.show');
     Route::post('consultations/{consultation}/summarize', [ConsultationController::class, 'summarize'])->name('consultations.summarize');
+    Route::post('consultations/{consultation}/complete', [ConsultationController::class, 'complete'])->name('consultations.complete');
 
     // JSON API endpoints for audio upload/transcription
     Route::post('api/voice/upload', [ConsultationController::class, 'uploadAudio'])->name('voice.upload');

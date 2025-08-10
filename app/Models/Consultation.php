@@ -33,4 +33,9 @@ class Consultation extends Model
     {
         return $this->belongsTo(User::class, 'doctor_id');
     }
+
+    public function queue()
+    {
+        return $this->hasOne(Queue::class);
+    }
 }
