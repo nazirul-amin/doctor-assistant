@@ -187,28 +187,42 @@ class ConsultationController extends Controller
             // Prepare Groq API parameters
             $transcriptionParams = [
                 'file' => $fullPath,
-                'model' => $request->input('model', 'whisper-large-v3-turbo'),
+                'model' => $request->input('model', 'whisper-v3-large'),
                 'response_format' => $request->input('response_format', 'json'),
             ];
-
-            // Add optional parameters if provided
-            if ($request->has('language')) {
-                $transcriptionParams['language'] = $request->input('language');
-            }
-
-            if ($request->has('prompt')) {
-                $transcriptionParams['prompt'] = $request->input('prompt');
-            }
-
-            if ($request->has('temperature')) {
-                $transcriptionParams['temperature'] = (float) $request->input('temperature');
-            }
 
             // Call Groq service to transcribe the audio
             $response = Groq::transcriptions()->create($transcriptionParams);
 
             // Extract transcription text based on response format
             $transcription = isset($response['text']) ? $response['text'] : $response;
+
+            $systemPrompt = "
+                Below is a text conversation between a doctor and a patient. DO NOT translate the conversation.
+
+                <transcription>"
+                    .$transcription.
+                "</transcription>
+                
+                Take all the right context on my transcription and despite the useless information, output the result.
+     
+                Response as a question and answer log, no extra text and plain text only.
+
+                IF the transcription is incomplete. Response: Transcription is incomplete.
+            ";
+            
+            
+            $finalResponse = Groq::chat()->completions()->create([
+                'model' => 'llama-3.1-8b-instant',
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                ],
+                'temperature' => 0.3,
+                'max_tokens' => 4000,
+                'top_p' => 0.9,
+            ]);
+
+            $finalTranscription = $finalResponse['choices'][0]['message']['content'];
 
             // Clean up the file after transcription
             Storage::disk('local')->delete($filePath);
@@ -229,7 +243,7 @@ class ConsultationController extends Controller
                 'success' => true,
                 'message' => 'Audio transcribed successfully',
                 'data' => [
-                    'transcription' => $transcription,
+                    'transcription' => $finalTranscription,
                     'model_used' => $transcriptionParams['model'],
                     'response_format' => $transcriptionParams['response_format'],
                     'full_response' => $response,
