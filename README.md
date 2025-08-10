@@ -1,8 +1,8 @@
-# AI-Powered Doctor Consultation Assistant
+# AI Powered Doctor Consultation Assistant
 
 ## Executive Summary
 
-The AI-Powered Doctor Consultation Assistant is an innovative healthcare technology solution that addresses the critical challenge of time management during patient consultations. By leveraging advanced artificial intelligence, this system automatically transcribes doctor-patient conversations in real-time and generates structured, clinically relevant summaries, enabling healthcare professionals to focus on patient care while maintaining comprehensive medical records.
+The AI Powered Doctor Consultation Assistant is an innovative healthcare technology solution that addresses the critical challenge of time management during patient consultations. By leveraging advanced artificial intelligence, this system automatically transcribes doctor-patient conversations in real-time and generates structured, clinically relevant summaries, enabling healthcare professionals to focus on patient care while maintaining comprehensive medical records.
 
 ## Problem Statement
 
@@ -136,9 +136,12 @@ Our system integrates cutting-edge AI technologies to create a seamless consulta
 
 ## Conclusion
 
-The AI-Powered Doctor Consultation Assistant represents a significant advancement in healthcare technology, addressing real-world challenges faced by medical professionals. By automating routine documentation tasks while maintaining the human element of medical care, this system enables healthcare providers to deliver better patient outcomes while improving their own work experience.
+The AI Powered Doctor Consultation Assistant represents a significant advancement in healthcare technology, addressing real-world challenges faced by medical professionals. By automating routine documentation tasks while maintaining the human element of medical care, this system enables healthcare providers to deliver better patient outcomes while improving their own work experience.
 
-The integration of cutting-edge AI technologies with robust healthcare workflows creates a solution that is both innovative and practical, offering immediate benefits to healthcare professionals and patients alike. As the system continues to evolve with additional features and capabilities, it will play an increasingly important role in modern healthcare delivery.
+The integration of cutting edge AI technologies with robust healthcare workflows creates a solution that is both innovative and practical, offering immediate benefits to healthcare professionals and patients alike. As the system continues to evolve with additional features and capabilities, it will play an increasingly important role in modern healthcare delivery.
+
+## Demo Video
+[![Watch the video](https://img.youtube.com/vi/-AkkdpNtfLA/1.jpg)](https://youtu.be/-AkkdpNtfLA)
 
 ---
 
