@@ -22,17 +22,15 @@ class QueueController extends Controller
             ->with(['patient', 'consultation', 'processedBy'])
             ->orderBy('queue_number')
             ->get();
-
-        $waitingCount = $todayQueue->where('status', 'waiting')->count();
-        $inProgressCount = $todayQueue->where('status', 'in_progress')->count();
-        $completedCount = $todayQueue->where('status', 'completed')->count();
-
+    
+        $grouped = $todayQueue->groupBy('status');
+    
         return Inertia::render('queue/index', [
-            'queue' => $todayQueue->where('status', '!=', 'completed'),
+            'queue' => $todayQueue->where('status', '!=', 'completed')->values(),
             'stats' => [
-                'waiting' => $waitingCount,
-                'in_progress' => $inProgressCount,
-                'completed' => $completedCount,
+                'waiting' => $grouped->get('waiting', collect())->count(),
+                'in_progress' => $grouped->get('in_progress', collect())->count(),
+                'completed' => $grouped->get('completed', collect())->count(),
                 'total' => $todayQueue->count(),
             ],
         ]);
