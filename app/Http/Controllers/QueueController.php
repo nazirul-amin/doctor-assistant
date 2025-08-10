@@ -66,7 +66,7 @@ class QueueController extends Controller
             'queue_number' => $queueNumber,
         ]);
 
-        return redirect()->route('queue.index')
+        return redirect()->route('dashboard')
             ->with('success', 'Patient added to the queue successfully.');
     }
 
@@ -77,7 +77,7 @@ class QueueController extends Controller
         }
 
         if ($queue->status !== 'waiting') {
-            return redirect()->route('queue.index')
+            return redirect()->route('dashboard')
                 ->with('error', 'This queue item cannot be processed.');
         }
 
@@ -111,7 +111,7 @@ class QueueController extends Controller
     public function complete(Queue $queue)
     {
         if ($queue->status !== 'in_progress') {
-            return redirect()->route('queue.index')
+            return redirect()->route('dashboard')
                 ->with('error', 'This queue item cannot be completed.');
         }
 
@@ -119,7 +119,7 @@ class QueueController extends Controller
             'status' => 'completed',
         ]);
 
-        return redirect()->route('queue.index')
+        return redirect()->route('dashboard')
             ->with('success', 'Queue item marked as completed.');
     }
 
@@ -130,7 +130,7 @@ class QueueController extends Controller
         }
 
         if ($queue->status === 'completed') {
-            return redirect()->route('queue.index')
+            return redirect()->route('dashboard')
                 ->with('error', 'Cannot cancel a completed queue item.');
         }
 
@@ -138,7 +138,7 @@ class QueueController extends Controller
             'status' => 'cancelled',
         ]);
 
-        return redirect()->route('queue.index')
+        return redirect()->route('dashboard')
             ->with('success', 'Queue item cancelled.');
     }
 
